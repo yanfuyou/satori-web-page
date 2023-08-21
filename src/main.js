@@ -7,7 +7,6 @@ import 'element-plus/dist/index.css'
 
 import * as ElementPLusIconsVue from '@element-plus/icons-vue'
 
-import JwChat from 'jwchat'
 
 import 'element-plus/theme-chalk/index.css'
 const pinia = createPinia();
@@ -17,7 +16,6 @@ const app = createApp(App);
 app.use(pinia)
 app.use(router)
 app.use(ElementPlus)
-app.use(JwChat)
 for (const [key, component] of Object.entries(ElementPLusIconsVue)) {
     app.component(key, component)
 }

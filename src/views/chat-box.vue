@@ -1,11 +1,18 @@
 <script lang="ts" setup>
-import { onMounted, ref } from "vue"
+import {onMounted, ref} from "vue"
 import sessionItem from '../components/chat/session-item.vue'
-const ChatSession =[{}]
+import { Promotion,CirclePlus } from '@element-plus/icons-vue'
+const intputMsg = ref('')
+const ChatSession = [{}]
 
 const isEdit = ref(false);
 
-const activeSession = ref({id:1,topic:'会话1',updatedAt:'2023-08-20',messages:['123']});
+const activeSession = ref({
+  id: 1,
+  topic: '会话1',
+  updatedAt: '2023-08-20',
+  messages: [{sendUser: 'cat', content: '消息内容', createBy: '2023-08-09'}]
+});
 
 const sessionList = ref([])
 
@@ -14,9 +21,9 @@ onMounted(() => {
   // 查询自己的聊天会话
   console.log("查询会话")
 
-  sessionList.value.push({id:1,topic:'会话1',updatedAt:'2023-08-20',messages:['123']})
-  sessionList.value.push({id:2,topic:'会话2',updatedAt:'2023-08-20',messages:[{}]})
-  sessionList.value.push({id:3,topic:'会话3',updatedAt:'2023-08-20',messages:[{}]})
+  sessionList.value.push({id: 1, topic: '会话1', updatedAt: '2023-08-20', messages: ['123']})
+  sessionList.value.push({id: 2, topic: '会话2', updatedAt: '2023-08-20', messages: [{}]})
+  sessionList.value.push({id: 3, topic: '会话3', updatedAt: '2023-08-20', messages: [{}]})
   activeSession.value = sessionList.value[0];
   // queryChatSession({ pageSize: 1000, pageNum: 1, query: {} }).then((res) => {
   //   // 讲会话添加到列表中
@@ -44,8 +51,9 @@ const handleCreateSession = async () => {
   console.log('新建聊天')
   // const res = await saveChatSession({ topic: "新的聊天" });
   // sessionList.value.unshift((await findChatSessionById(res.result)).result);
-  sessionList.value.unshift({id:5,topic:'会话5',updatedAt:'2023-08-20',messages:[{}]});
+  sessionList.value.unshift({id: 5, topic: '会话5', updatedAt: '2023-08-20', messages: [{}]});
 };
+const maxtextNum = 300;
 
 </script>
 
@@ -60,17 +68,6 @@ const handleCreateSession = async () => {
           <div class="title">坑坑聊天室</div>
           <div class="description">请友善发言</div>
           <div class="session-list">
-            <!-- for循环遍历会话列表用会话组件显示，并监听点击事件和删除事件。点击时切换到被点击的会话，删除时从会话列表中提出被删除的会话。 -->
-            <!--  -->
-<!--            <session-item-->
-<!--                v-for="(session, index) in sessionList"-->
-<!--                :key="session.id"-->
-<!--                :active="session.id === activeSession.id"-->
-<!--                :session="sessionList[index]"-->
-<!--                class="session"-->
-<!--                @click="handleSessionSwitch(session)"-->
-<!--                @delete="handleDeleteSession"-->
-<!--            />-->
             <session-item
                 v-for="(session, index) in sessionList"
                 :key="session.id"
@@ -85,7 +82,7 @@ const handleCreateSession = async () => {
             <div class="new-session">
               <el-button @click="handleCreateSession">
                 <el-icon :size="15" class="el-icon--left">
-                  <CirclePlus />
+                  <CirclePlus/>
                 </el-icon>
                 新的聊天
               </el-button>
@@ -94,8 +91,13 @@ const handleCreateSession = async () => {
         </div>
         <!-- 右侧的消息记录 -->
         <div class="message-panel">
-
-
+          <div class="msg-list">
+            this is messge-panel
+          </div>
+          <div class="input-box">
+            <el-input id="msgInput" :show-word-limit="true" :maxlength="maxtextNum" type="textarea" v-model="intputMsg" placeholder="Please input" resize="none" style="width: 600px;display: flex;" />
+            <el-button  :icon="Promotion" style="height:52px;" />
+          </div>
         </div>
       </div>
     </div>
@@ -111,6 +113,7 @@ const handleCreateSession = async () => {
   width: 100vw;
   /* 水平方向上剧中 */
   justify-content: center;
+
   .chat-panel {
     /* 聊天面板flex布局，让会话列表和聊天记录左右展示 */
     display: flex;
@@ -152,7 +155,23 @@ const handleCreateSession = async () => {
     .message-panel {
       width: 700px;
       height: 800px;
+      position: relative;
+      .msg-list{
+        height: 620px;
+      }
+      .input-box {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* 将容器分为两列 */
+        grid-gap: 0; /* 列之间的间隙 */
+        align-items: center; /* 垂直居中对齐 */
+        #msgInput{
+          overflow: hidden;
+        }
+      }
+
     }
+
     .session-list {
       .session {
         /* 每个会话之间留一些间距 */
