@@ -33,6 +33,16 @@ const routes = [
         path:'',
         redirect: '/home'
     },
+    {
+        path:'/user',
+        componet: Layout,
+        children: [
+            {
+                path:'login',
+                component: ()=> import('@/views/login.vue')
+            }
+        ]
+    }
 ]
 
 const router = createRouter({

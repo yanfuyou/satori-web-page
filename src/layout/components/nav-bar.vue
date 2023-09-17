@@ -31,6 +31,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
       </el-menu-item>
       <div class="flex-grow"/>
       <el-menu-item index="/home">首页</el-menu-item>
+      <el-menu-item index="/user/login">登录</el-menu-item>
       <el-sub-menu index="/wonder">
         <template #title>奇妙地</template>
         <el-menu-item index="/worker">工作坑</el-menu-item>

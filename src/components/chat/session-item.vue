@@ -6,7 +6,7 @@
   // active：用来标记当前会话是否处于选中状态
   // session：用于展示的会话信息
   // const prop = defineProps<{ active: boolean; session: ChatSession }>();
-  const prop = defineProps<{ active: boolean; session: {id,topic,updatedAt,messages}}>();
+  const prop = defineProps<{ active: boolean; session: {id:number,type:string,name:string,picture:string,updatedAt:Date,messages:Array<Object>}}>();
   // 定义删除事件，当触发删除事件时会向外部发送被删除的会话。
   const emit = defineEmits<{
     // delete: [session: ChatSession];
@@ -25,7 +25,10 @@
   <!-- 如果处于激活状态则增加 active class -->
   <div :class="['session-item', active ? 'active' : '']">
     <!-- 会话的名称 -->
-    <div class="name">{{ session.topic }}</div>
+    <div class="name demo-basic--circle">
+      <el-avatar shape="square" size="small" :src="session.picture" />
+      {{ session.name }}
+    </div>
     <!-- 会话内的消息数量和最近修改的时间 -->
     <div class="count-time">
       <div class="count">
