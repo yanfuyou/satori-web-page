@@ -3,21 +3,33 @@
     <el-row :gutter="20">
       <el-col :span="3">
         <div class="grid-content ep-bg-purple">
-            <el-avatar shape="square" fit="container" :size="50" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+            <el-avatar shape="square" fit="container" :size="50" :src="item.picture" />
         </div>
       </el-col>
       <el-col :span="20" :offset="1">
-        <div class="grid-content ep-bg-purple">
-            <div>名称</div>
-            <dic>类别</dic>
-            <div>简介</div>
+        <div class="grid-content ep-bg-purple result-text">
+            <div class="name" >{{ item.name }}</div>
+            <dic class="category">{{ item.category}}</dic>
+            <div class="desc">{{ item.desc }}</div>
         </div>
       </el-col>
     </el-row>
   </div>
 </template>
 
-<script setup></script>
+<script setup lang="ts">
+
+import { computed } from 'vue';
+
+const props = defineProps({
+  result: Object
+})
+
+const item = computed(()=> {
+  return props.result;
+})
+
+</script>
 
 <style scoped>
 .el-row {
@@ -28,12 +40,19 @@
 }
 .el-col {
   border-radius: 4px;
-  background-color: antiquewhite;
+  .result-text{
+    text-align: left;
+  }
 }
 
 .grid-content {
   border-radius: 4px;
   min-height: 36px;
-  background-color: blueviolet;
+  .name{
+    font-weight: bold;
+  }
+  .category,.desc{
+    font-weight: 20;
+  }
 }
 </style>

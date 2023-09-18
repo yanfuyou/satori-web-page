@@ -84,16 +84,22 @@
             </el-input>
             <!-- 搜索结果 -->
             <div class="search-result">
-              <search-result-item />
+              <search-result-item
+                v-for="item in searchResult"
+                :key="item.id"
+                :result="item"
+              />
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="新建"> </el-tab-pane>
+        <el-tab-pane label="新建">
+          <newGroup />
+        </el-tab-pane>
       </el-tabs>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="visible = false">取消</el-button>
-          <el-button type="primary" @click="visible = false"> 确认 </el-button>
+          <!-- <el-button type="primary" @click="visible = false"> 确认 </el-button> -->
         </span>
       </template>
     </el-dialog>
@@ -103,6 +109,7 @@
 import { onMounted, onBeforeUnmount, ref, reactive } from "vue";
 import sessionItem from "../components/chat/session-item.vue";
 import searchResultItem from "../components/chat/search-result-item.vue";
+import newGroup from '../components/chat/new-group.vue'
 import { Promotion, CirclePlus, Search } from "@element-plus/icons-vue";
 import { ElMessageBox } from "element-plus";
 import { io } from "socket.io-client";
@@ -119,6 +126,54 @@ const searchForm = ref({
   searchType: "0",
   searchKeyword: "",
 });
+
+const searchResult = ref([{}]);
+
+searchResult.value = [
+  {
+    id: 1,
+    name: "helloWorld1",
+    category: "group",
+    desc: "这是一个群",
+    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+  },
+  {
+    id: 2,
+    name: "helloWorld2",
+    category: "personal",
+    desc: "这是一个群",
+    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+  },
+  {
+    id: 3,
+    name: "helloWorld2",
+    category: "personal",
+    desc: "这是一个群",
+    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+  },
+  {
+    id: 4,
+    name: "helloWorld2",
+    category: "personal",
+    desc: "这是一个群",
+    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+  },
+  {
+    id: 5,
+    name: "helloWorld2",
+    category: "personal",
+    desc: "这是一个群",
+    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+  },
+  {
+    id: 6,
+    name: "helloWorld2",
+    category: "personal",
+    desc: "这是一个群",
+    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+  },
+];
+
 //切换列表
 let listFlag = ref("user");
 
@@ -331,5 +386,13 @@ onBeforeUnmount(() => {
 }
 .dialog-footer button:first-child {
   margin-right: 10px;
+}
+.search-result {
+  max-height: 300px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar {
+  opacity: 0;
 }
 </style>
