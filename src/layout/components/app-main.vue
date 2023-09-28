@@ -11,7 +11,5 @@
   margin-top: 2px;
   margin-bottom: 2px;
   text-align: center;
-  //border-style: dashed;
-  //border-color: black;
 }
 </style>

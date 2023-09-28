@@ -41,7 +41,9 @@
         </div>
         <!-- 右侧的消息记录 -->
         <div class="message-panel">
-          <div class="msg-list">this is messge-panel</div>
+          <div class="msg-list">
+            <message-panel :active-session="activeSession"/>
+          </div>
           <div class="input-box">
             <el-input
               id="msgInput"
@@ -110,10 +112,13 @@ import { onMounted, onBeforeUnmount, ref, reactive } from "vue";
 import sessionItem from "../components/chat/session-item.vue";
 import searchResultItem from "../components/chat/search-result-item.vue";
 import newGroup from '../components/chat/new-group.vue'
+import messagePanel from '../components/chat/message-panel.vue'
 import { Promotion, CirclePlus, Search } from "@element-plus/icons-vue";
 import { ElMessageBox } from "element-plus";
 import { io } from "socket.io-client";
 import { useUserStore } from "../store/useUserStore";
+
+import { searchUser } from '../api/test'
 
 const intputMsg = ref("");
 const receiverId = ref("");
@@ -182,7 +187,28 @@ let activeSession = ref({});
 let sessionList = ref([{}]);
 //清空
 sessionList.value.length = 0;
-
+sessionList.value.push({
+    id: 1,
+    name: "会话1",
+    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+    updatedAt: "2023-08-20",
+    messages: [{}],
+  });
+  sessionList.value.push({
+    id: 2,
+    name: "会话2",
+    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+    updatedAt: "2023-08-20",
+    messages: [{}],
+  });
+  sessionList.value.push({
+    id: 3,
+    name: "会话3",
+    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+    updatedAt: "2023-08-20",
+    messages: [{}],
+  });
+  activeSession.value = sessionList.value[0];
 //socket相关
 let socket;
 onMounted(() => {
@@ -237,6 +263,11 @@ onMounted(() => {
 // 切换会话
 const handleSessionSwitch = (session) => {
   activeSession.value = session;
+  activeSession.value.messages = [{
+    id:1,
+    name:'我',
+    content:'你说啥？'
+  }]
 };
 // 从会话列表中删除会话
 const handleDeleteSession = (session) => {
@@ -257,6 +288,9 @@ const maxtextNum = 300;
 
 // 切换好友列表
 const changeFriendList = () => {
+
+  const users = searchUser();
+  console.log(users)
   //去后台拉取对应的列表
   if (listFlag.value === "user") {
     // sessionList.value=

@@ -1,22 +1,21 @@
 import axios from 'axios'
-import store from '@/store/useUserStore'
-// import { getToken } from '@/utils/auth'
-
+import { getToken } from '@/utils/auth'
+import { ElMessage } from 'element-plus'
 const service = axios.create({
     // baseURL: process.env.VUE_APP_BASE_API,
-    baseURL: _APP_URL,
+    baseURL: 'http://localhost:8080/satori-service-api',
     timeout: 10000
 })
 // 请求拦截
 service.interceptors.request.use(
     config => {
-        if (store.getters.token) {
-            // config.headers['Authorization'] = 'Bearer ' + getToken()
+        const tokenVal = getToken();
+        if (tokenVal) {
+            config.headers['Authorization'] = 'Bearer ' + tokenVal;
         }
         return config
     },
     error => {
-        console.log(error)
         return Promise.reject(error)
     }
 )
@@ -26,37 +25,24 @@ service.interceptors.response.use(
     response => {
         const res = {
             code: response.data.code,
-            message: response.data.msg,
-            data: response.data.records
+            errMessage: response.data.errMsg,
+            data: response.data.data
         }
-        if (res.code === 401) {
-            // MessageBox.confirm('请登录', '退出', {
-            //     confirmButtonText: '重登',
-            //     cancelButtonText: '关闭',
-            //     type: 'warning'
-            // }).then(() => {
-            //     store.dispatch('user/resetToken').then(() => {
-            //         location.reload()
-            //     })
-            // })
+        if (res.code === '401') {
+            
         }
-        if (res.code !== 2000) {
-            // Message({
-            //     message: res.message || 'Error',
-            //     type: 'error',
-            //     duration: 5 * 1000
-            // })
+        if (res.code !== '200') {
+            ElMessage({
+                showClose: false,
+                message: res.errMessage,
+                type: 'error',
+            })
             return Promise.reject(new Error(res.message || 'Error'))
         } else {
             return res
         }
     },
     error => {
-        // Message({
-        //     message: error.message,
-        //     type: 'error',
-        //     duration: 5 * 1000
-        // })
         return Promise.reject(error)
     }
 )

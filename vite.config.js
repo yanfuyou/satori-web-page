@@ -3,12 +3,13 @@ import {fileURLToPath, URL} from 'node:url'
 import {defineConfig,loadEnv} from 'vite'
 import vue from '@vitejs/plugin-vue'
 
+
 // https://vitejs.dev/config/
-export default ({ mode}) => {
-  console.log(mode)
+export default ({ mode, command}) => {
+    const env = loadEnv(mode, process.cwd(), '')
     return defineConfig({
         plugins: [
-            vue(),
+            vue()
         ],
         resolve: {
             alias: {
@@ -16,7 +17,7 @@ export default ({ mode}) => {
             }
         },
       define:{
-        _APP_URL: loadEnv(mode,process.cwd()).VUE_APP_BASE_API
+        // _APP_URL: env.VITE_APP_BASE_PATH
       }
     })
 }
