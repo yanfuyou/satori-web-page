@@ -118,7 +118,6 @@ import { ElMessageBox } from "element-plus";
 import { io } from "socket.io-client";
 import { useUserStore } from "../store/useUserStore";
 
-import { searchUser } from '../api/test'
 
 const intputMsg = ref("");
 const receiverId = ref("");

@@ -1,22 +1,43 @@
 import { defineStore } from "pinia";
-
-export const useUserStore = defineStore('user',{
-    state: ()=> {
-       return {
-           id:0
-       }
+import { setToken, removeToken } from '../utils/auth.js';
+export const useUserStore = defineStore('userStore', {
+    state: () => {
+        return {
+            baseInfo: {
+                id: -1,
+                name: '',
+                nikeName: '',
+                email: '',
+                avatar: '',
+                createTime: ''
+            }
+        }
     },
     getters: {
-        getUser: (state) => state.id
+        getUser: (state) => state.baseInfo,
+        needSignin: (state) => state.baseInfo.id === -1
     },
     actions: {
-        // setUser(){
-        //     console.log('click me!')
-        //     this.user.name='cat——y'
-        //     console.log(this.user.name)
-        // },
-        setUserId(userId){
-            this.state.id=userId;
+        saveUser(userInfo, tokenVal) {
+            setToken(tokenVal);
+            const { id, userName, nikeName, avatar, userEmail, createTime } = userInfo;
+            this.baseInfo.id = id;
+            this.baseInfo.name = userName;
+            this.baseInfo.nikeName = nikeName;
+            this.baseInfo.avatar = avatar;
+            this.baseInfo.email = userEmail;
+            this.baseInfo.createTime = createTime;
+        },
+        signOut() {
+            this.baseInfo = {
+                id: -1,
+                name: '',
+                nikeName: '',
+                email: '',
+                avatar: '',
+                createTime: ''
+            }
+            removeToken();
         }
     }
 });

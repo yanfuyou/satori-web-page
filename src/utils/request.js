@@ -23,6 +23,13 @@ service.interceptors.request.use(
 // 响应拦截
 service.interceptors.response.use(
     response => {
+        if(response.config.hasOwnProperty('params') && response.config.params.hasOwnProperty('isThird')){
+            return response.data;
+        }else if(response.config.hasOwnProperty('data')){
+            if(typeof response.config.data == 'string' && response.config.data.indexOf('isThird') != -1){
+                return response.data;
+            }
+        }
         const res = {
             code: response.data.code,
             errMessage: response.data.errMsg,
@@ -31,13 +38,13 @@ service.interceptors.response.use(
         if (res.code === '401') {
             
         }
-        if (res.code !== '200') {
+        if (res.code !== '0') {
             ElMessage({
                 showClose: false,
                 message: res.errMessage,
                 type: 'error',
             })
-            return Promise.reject(new Error(res.message || 'Error'))
+            return Promise.reject(new Error(res.errMessage || 'Error'))
         } else {
             return res
         }

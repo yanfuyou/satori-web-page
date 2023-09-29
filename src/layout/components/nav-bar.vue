@@ -1,19 +1,3 @@
-<script lang="ts" setup>
-import {ref} from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-
-const router = useRouter();
-const route = useRoute();
-
-const logoName = ref('Satori')
-const activeIndex = ref('/logo')
-
-const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-  router.push(key)
-}
-</script>
-
 <template>
   <div id="nav">
     <el-menu
@@ -31,7 +15,8 @@ const handleSelect = (key: string, keyPath: string[]) => {
       </el-menu-item>
       <div class="flex-grow"/>
       <el-menu-item index="/home">首页</el-menu-item>
-      <el-menu-item index="/user/login">登录</el-menu-item>
+      <el-menu-item v-if="userStore.needSignin" index="/user/login">登录</el-menu-item>
+      <el-menu-item v-else index="/" @click="bye">再见</el-menu-item>
       <el-sub-menu index="/wonder">
         <template #title>奇妙地</template>
         <el-menu-item index="/worker">工作坑</el-menu-item>
@@ -44,18 +29,38 @@ const handleSelect = (key: string, keyPath: string[]) => {
     </el-menu>
   </div>
 </template>
+<script lang="ts" setup>
+import {ref} from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useUserStore} from '../../store/useUserStore';
+import { signOut } from '../../api/user-api';
 
+const userStore = useUserStore();
+const router = useRouter();
+const route = useRoute();
+
+const logoName = ref('Satori')
+const activeIndex = ref('/logo')
+
+const handleSelect = (key: string, keyPath: string[]) => {
+  router.push(key)
+}
+
+const bye = ()=>{
+  console.log('byebye')
+  signOut(userStore.getUser.id).then(res => {
+    userStore.signOut()
+  })
+}
+</script>
 <style scoped>
 #nav {
   height: 5%;
   width: 100%;
   text-align: center;
-  //border-style: dashed;
-  //border-color: black;
   #logo{
     clear: both;
     float: left !important;
-    //padding-left: 10px;
   }
 }
 

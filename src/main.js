@@ -20,7 +20,7 @@ for (const [key, component] of Object.entries(ElementPLusIconsVue)) {
     app.component(key, component)
 }
 
-app.config.globalProperties.showTost = function (showClose,type,message) {
+app.config.globalProperties.showToast = function (showClose,type,message) {
     ElMessage({
         showClose: showClose,
         message: message,

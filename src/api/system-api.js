@@ -6,3 +6,30 @@ export function getCaptcha(){
         method:'GET'
     })
 }
+
+
+export function getParamValueByName(paramName){
+    return request({
+        url:'/api/system/param/value/get',
+        method:'GET',
+        params:{
+            paramName
+        }
+    })
+}
+
+export function requestThirdUrlGet(url,params){
+    return request({
+        url,
+        method: 'GET',
+        params
+    })
+}
+
+export function requestThirdUrlPost(url,body){
+    return request({
+        url,
+        method: 'POST',
+        body
+    })
+}

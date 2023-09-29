@@ -10,7 +10,7 @@ export function signUp(signModel){
         url: '/api/user/sign_up',
         method: 'POST',
         data: signModel
-    })
+    });
 }
 
 /**
@@ -23,7 +23,7 @@ export function signIn(signModel){
         url: '/api/user/sign_in',
         method: 'POST',
         data: signModel
-    })
+    });
 }
 
 /**
@@ -35,5 +35,13 @@ export function signOut(userId){
     return request({
         url: '/api/user/sign_out/' + userId,
         method: 'GET',
-    })
+    });
+}
+
+
+export function getUserInfo(userId){
+    return request({
+        url: '/api/user/get/' + userId,
+        method: 'GET'
+    });
 }

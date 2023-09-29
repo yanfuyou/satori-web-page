@@ -18,6 +18,9 @@ export default ({ mode, command}) => {
         },
       define:{
         // _APP_URL: env.VITE_APP_BASE_PATH
+      },
+      dev:{
+        devtool: 'source-map'
       }
     })
 }
