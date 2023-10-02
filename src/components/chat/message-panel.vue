@@ -15,13 +15,15 @@
 <script setup>
 import { computed } from "vue";
 import messageItem from "./message-item.vue";
-const props = defineProps({
-  activeSession: Object,
-});
-// console.log(activeSession)
+
+const props = defineProps(['activeSession']);
 const activeSession = computed(() => {
   return props.activeSession;
 });
+
+const refreshMessges = ()=>{
+  
+}
 </script>
 <style scoped lang="scss">
 .el-row {

@@ -3,14 +3,14 @@
     <el-row :gutter="20">
       <el-col :span="3">
         <div class="grid-content ep-bg-purple">
-            <el-avatar shape="square" fit="container" :size="50" :src="item.picture" />
+            <el-avatar shape="square" fit="container" :size="50" :src="result.picture" />
         </div>
       </el-col>
       <el-col :span="20" :offset="1">
         <div class="grid-content ep-bg-purple result-text">
-            <div class="name" >{{ item.name }}</div>
-            <dic class="category">{{ item.category}}</dic>
-            <div class="desc">{{ item.desc }}</div>
+            <div class="name" >{{ result.name }}</div>
+            <dic class="category">{{ result.category}}</dic>
+            <div class="desc">{{ result.desc }}</div>
         </div>
       </el-col>
     </el-row>
@@ -21,11 +21,9 @@
 
 import { computed } from 'vue';
 
-const props = defineProps({
-  result: Object
-})
+const props = defineProps(['result'])
 
-const item = computed(()=> {
+const result = computed(()=> {
   return props.result;
 })
 

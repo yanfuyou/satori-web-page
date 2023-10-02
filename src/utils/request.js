@@ -31,6 +31,7 @@ service.interceptors.response.use(
             }
         }
         const res = {
+            success: response.data.success,
             code: response.data.code,
             errMessage: response.data.errMsg,
             data: response.data.data

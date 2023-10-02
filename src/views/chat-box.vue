@@ -10,13 +10,13 @@
           <div class="description">请友善发言</div>
           <div class="session-list">
             <session-item
-              v-for="(session, index) in sessionList"
+              v-for="session in sessionList"
               :key="session.id"
               :active="session.id === activeSession.id"
-              :session="sessionList[index]"
+              :session="session"
               class="session"
               @click="handleSessionSwitch(session)"
-              @delete="handleDeleteSession(session)"
+              @deleteSession="deleteSession"
             />
           </div>
           <div class="button-wrapper">
@@ -42,7 +42,7 @@
         <!-- 右侧的消息记录 -->
         <div class="message-panel">
           <div class="msg-list">
-            <message-panel :active-session="activeSession"/>
+            <message-panel :active-session="activeSession" />
           </div>
           <div class="input-box">
             <el-input
@@ -95,7 +95,7 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="新建">
-          <newGroup />
+          <new-group @refresh-session-list="refreshSessionList" />
         </el-tab-pane>
       </el-tabs>
       <template #footer>
@@ -107,23 +107,25 @@
     </el-dialog>
   </div>
 </template>
-<script lang="ts" setup>
-import { onMounted, onBeforeUnmount, ref, reactive } from "vue";
+<script setup>
+import { onMounted, onBeforeUnmount, ref, reactive, computed } from "vue";
 import sessionItem from "../components/chat/session-item.vue";
 import searchResultItem from "../components/chat/search-result-item.vue";
-import newGroup from '../components/chat/new-group.vue'
-import messagePanel from '../components/chat/message-panel.vue'
+import newGroup from "../components/chat/new-group.vue";
+import messagePanel from "../components/chat/message-panel.vue";
 import { Promotion, CirclePlus, Search } from "@element-plus/icons-vue";
 import { ElMessageBox } from "element-plus";
 import { io } from "socket.io-client";
 import { useUserStore } from "../store/useUserStore";
-
+import { getGroupList } from "../api/user-chat-api";
 
 const intputMsg = ref("");
 const receiverId = ref("");
+
+const activeSession = reactive({});
 const ChatSession = {};
 const isEdit = ref(false);
-const user = useUserStore;
+const userStore = useUserStore();
 const visible = ref(false);
 const showClose = false;
 const searchForm = ref({
@@ -131,89 +133,30 @@ const searchForm = ref({
   searchKeyword: "",
 });
 
-const searchResult = ref([{}]);
+const searchResult = reactive([{}]);
 
-searchResult.value = [
-  {
-    id: 1,
-    name: "helloWorld1",
-    category: "group",
-    desc: "这是一个群",
-    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-  },
-  {
-    id: 2,
-    name: "helloWorld2",
-    category: "personal",
-    desc: "这是一个群",
-    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-  },
-  {
-    id: 3,
-    name: "helloWorld2",
-    category: "personal",
-    desc: "这是一个群",
-    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-  },
-  {
-    id: 4,
-    name: "helloWorld2",
-    category: "personal",
-    desc: "这是一个群",
-    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-  },
-  {
-    id: 5,
-    name: "helloWorld2",
-    category: "personal",
-    desc: "这是一个群",
-    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-  },
-  {
-    id: 6,
-    name: "helloWorld2",
-    category: "personal",
-    desc: "这是一个群",
-    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-  },
-];
+searchResult.push({
+  id: 1,
+  name: "helloWorld1",
+  category: "group",
+  desc: "这是一个群",
+  picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+});
 
 //切换列表
 let listFlag = ref("user");
 
-let activeSession = ref({});
 //会话列表
-let sessionList = ref([{}]);
-//清空
-sessionList.value.length = 0;
-sessionList.value.push({
-    id: 1,
-    name: "会话1",
-    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-    updatedAt: "2023-08-20",
-    messages: [{}],
-  });
-  sessionList.value.push({
-    id: 2,
-    name: "会话2",
-    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-    updatedAt: "2023-08-20",
-    messages: [{}],
-  });
-  sessionList.value.push({
-    id: 3,
-    name: "会话3",
-    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-    updatedAt: "2023-08-20",
-    messages: [{}],
-  });
-  activeSession.value = sessionList.value[0];
+const sessionList = reactive([{}]);
+sessionList.length=0;
 //socket相关
 let socket;
-onMounted(() => {
+onMounted(async () => {
+  await refreshSessionList();
   socket = new WebSocket(
-    "ws://localhost:8080/satori-service-api/websocket/message/" + user.id
+    "ws://localhost:8080/satori-service-api/websocket/message/" + userStore.getUser.id
   );
+  
   //  socket = io('ws://localhost:8080/websocket/message');
   // 查询自己的聊天会话
   console.log("查询会话");
@@ -228,54 +171,45 @@ onMounted(() => {
   socket.onerror = function () {
     console.log("websocket发生了错误");
   };
-  sessionList.value.push({
-    id: 1,
-    name: "会话1",
-    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-    updatedAt: "2023-08-20",
-    messages: [{}],
-  });
-  sessionList.value.push({
-    id: 2,
-    name: "会话2",
-    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-    updatedAt: "2023-08-20",
-    messages: [{}],
-  });
-  sessionList.value.push({
-    id: 3,
-    name: "会话3",
-    picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-    updatedAt: "2023-08-20",
-    messages: [{}],
-  });
-  activeSession.value = sessionList.value[0];
-  // queryChatSession({ pageSize: 1000, pageNum: 1, query: {} }).then((res) => {
-  //   // 讲会话添加到列表中
-  //   sessionList.value.push(...res.result.list);
-  //   // 默认选中的聊天会话是第一个
-  //   if (sessionList.value.length > 0) {
-  //     activeSession.value = sessionList.value[0];
-  //   }
-  // });
+  handleSessionSwitch(sessionList[0]);
 });
 // 切换会话
 const handleSessionSwitch = (session) => {
-  activeSession.value = session;
-  activeSession.value.messages = [{
-    id:1,
-    name:'我',
-    content:'你说啥？'
-  }]
+  activeSession.id = session.id;
+  activeSession.avatar = session.avatar;
+  activeSession.name = session.name;
+  activeSession.createUserId = session.createUserId;
+  activeSession.process = session.process;
+  activeSession.type = session.type;
+  activeSession.createTime = session.createTime;
+  activeSession.joinTime = session.joinTime;
 };
-// 从会话列表中删除会话
-const handleDeleteSession = (session) => {
-  console.log("删除会话");
-  const index = sessionList.value.findIndex((value) => {
+
+const deleteSession = (session) => {
+  console.log("移除会话", searchForm);
+  const index = sessionList.findIndex((value) => {
     return value.id === session.id;
   });
-  sessionList.value.splice(index, 1);
+  sessionList.splice(index, 1);
 };
+
+const refreshSessionList = async () => {
+  await getGroupList({ userId: userStore.getUser.id }).then(res => {
+    for(const session of res.data){
+      sessionList.push({
+        id: session.id,
+        name: session.groupName,
+        avatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
+        createUserId: session.createUserId,
+        process: session.process,
+        type: session.type,
+        createTime: new Date(session.createTime).toLocaleDateString(),
+        joinTime: new Date(session.joinTime).toLocaleDateString()
+      })
+    }
+  });
+};
+
 // 新增会话
 const handleCreateSession = () => {
   visible.value = true;
@@ -287,9 +221,6 @@ const maxtextNum = 300;
 
 // 切换好友列表
 const changeFriendList = () => {
-
-  const users = searchUser();
-  console.log(users)
   //去后台拉取对应的列表
   if (listFlag.value === "user") {
     // sessionList.value=
@@ -302,14 +233,14 @@ const changeFriendList = () => {
 const send = () => {
   let msgBody = {
     content: intputMsg.value,
-    userId: user.id,
+    userId: userStore.getUser.id,
     receiverId: receiverId.value,
     sendType: 1,
   };
   socket.send(JSON.stringify(msgBody));
   console.log("发送消息", JSON.stringify(msgBody));
 };
-const handleClose = (done: () => void) => {
+const handleClose = () => {
   ElMessageBox.confirm("Are you sure to close this dialog?")
     .then(() => {
       done();
