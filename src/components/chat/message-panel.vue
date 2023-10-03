@@ -13,15 +13,24 @@
   </el-row>
 </template>
 <script setup>
-import { computed } from "vue";
-import messageItem from "./message-item.vue";
-
+import { computed,reactive } from 'vue';
+import messageItem from './message-item.vue';
+import { getGroupUsers,getMessageHistory } from '../../api/user-chat-api'
 const props = defineProps(['activeSession']);
+
+//当前会话中的消息
+const messages = reactive([{}])
+
 const activeSession = computed(() => {
   return props.activeSession;
 });
 
-const refreshMessges = ()=>{
+//加载历史消息
+const setMessageHistory = ()=>{
+  
+}
+
+const getGroupUser = async ()=>{
   
 }
 </script>

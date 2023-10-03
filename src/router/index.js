@@ -22,6 +22,10 @@ const routes = [
             {
                 path: 'chat',
                 component: ()=> import('@/views/chat-box.vue')
+            },
+            {
+                path: 'sky-hole',
+                component: () => import('@/views/sky-hole.vue')
             }
         ]
     },

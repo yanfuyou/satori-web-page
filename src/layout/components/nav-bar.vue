@@ -15,6 +15,7 @@
       </el-menu-item>
       <div class="flex-grow"/>
       <el-menu-item index="/home">首页</el-menu-item>
+      <el-menu-item index="/sky-hole">树洞</el-menu-item>
       <el-menu-item v-if="userStore.needSignin" index="/user/login">登录</el-menu-item>
       <el-menu-item v-else index="/" @click="bye">再见</el-menu-item>
       <el-sub-menu index="/wonder">

@@ -19,10 +19,39 @@ export function createGroup(data) {
  * @param {userId:number} params 
  * @returns 
  */
-export function getGroupList(params){
+export function getGroupList(params) {
     return request({
         url: '/api/user/group/get/list',
         method: 'GET',
         params
     })
+}
+
+
+/**
+ * 获取群组用户
+ * @param {groupId:number} params 
+ * @returns
+ */
+export function getGroupUsers(params) {
+    return request({
+        url: '/api/user/group/users/list',
+        method: 'GET',
+        params
+    })
+}
+
+/**
+ * 查询历史消息
+ * @param {receiverId:number,receiverType:number} params 
+ * @returns 
+ */
+export function getMessageHistory(params) {
+
+    return request({
+        url: '/api/message/history/get',
+        method: 'GET',
+        params
+    })
+
 }
