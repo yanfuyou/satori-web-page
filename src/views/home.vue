@@ -152,9 +152,9 @@ onMounted(() => {
     systemStore.updateBeautyWordsUrl(res.data);
   });
   changeWords();
-  setInterval(()=>{
-    changeWords();
-  },10 * 1000);
+  // setInterval(()=>{
+  //   changeWords();
+  // },10 * 1000);
 });
 
 const changeWords = () => {

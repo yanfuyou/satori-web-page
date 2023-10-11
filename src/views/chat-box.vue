@@ -44,19 +44,6 @@
           <div class="msg-list">
             <message-panel :active-session="activeSession" />
           </div>
-          <div class="input-box">
-            <el-input
-              id="msgInput"
-              :show-word-limit="true"
-              :maxlength="maxtextNum"
-              type="textarea"
-              v-model="intputMsg"
-              placeholder="Please input"
-              resize="none"
-              style="width: 600px; display: flex"
-            />
-            <el-button :icon="Promotion" style="height: 52px" @click="send" />
-          </div>
         </div>
       </div>
     </div>
@@ -119,7 +106,6 @@ import { io } from "socket.io-client";
 import { useUserStore } from "../store/useUserStore";
 import { getGroupList } from "../api/user-chat-api";
 
-const intputMsg = ref("");
 const receiverId = ref("");
 
 const activeSession = reactive({});
@@ -148,29 +134,11 @@ let listFlag = ref("user");
 
 //会话列表
 const sessionList = reactive([{}]);
-sessionList.length=0;
+sessionList.length = 0;
 //socket相关
 let socket;
 onMounted(async () => {
   await refreshSessionList();
-  socket = new WebSocket(
-    "ws://localhost:8080/satori-service-api/websocket/message/" + userStore.getUser.id
-  );
-  
-  //  socket = io('ws://localhost:8080/websocket/message');
-  // 查询自己的聊天会话
-  console.log("查询会话");
-  socket.onmessage = function (msg) {
-    console.log(msg);
-    console.log("发送者：", msg.senderId, "内容：", msg.content);
-  };
-  socket.onclose = function () {
-    console.log("websocket已关闭");
-  };
-  //发生了错误事件
-  socket.onerror = function () {
-    console.log("websocket发生了错误");
-  };
   handleSessionSwitch(sessionList[0]);
 });
 // 切换会话
@@ -194,18 +162,18 @@ const deleteSession = (session) => {
 };
 
 const refreshSessionList = async () => {
-  await getGroupList({ userId: userStore.getUser.id }).then(res => {
-    for(const session of res.data){
+  await getGroupList({ userId: userStore.getUser.id }).then((res) => {
+    for (const session of res.data) {
       sessionList.push({
         id: session.id,
         name: session.groupName,
-        avatar: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
+        avatar: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
         createUserId: session.createUserId,
         process: session.process,
         type: session.type,
         createTime: new Date(session.createTime).toLocaleDateString(),
-        joinTime: new Date(session.joinTime).toLocaleDateString()
-      })
+        joinTime: new Date(session.joinTime).toLocaleDateString(),
+      });
     }
   });
 };
@@ -217,7 +185,6 @@ const handleCreateSession = () => {
   // sessionList.value.unshift((await findChatSessionById(res.result)).result);
   // sessionList.value.unshift({id: 5, name: '会话5', updatedAt: '2023-08-20', messages: ['123']});
 };
-const maxtextNum = 300;
 
 // 切换好友列表
 const changeFriendList = () => {
@@ -230,16 +197,6 @@ const changeFriendList = () => {
   }
 };
 
-const send = () => {
-  let msgBody = {
-    content: intputMsg.value,
-    userId: userStore.getUser.id,
-    receiverId: receiverId.value,
-    sendType: 1,
-  };
-  socket.send(JSON.stringify(msgBody));
-  console.log("发送消息", JSON.stringify(msgBody));
-};
 const handleClose = () => {
   ElMessageBox.confirm("Are you sure to close this dialog?")
     .then(() => {
@@ -249,11 +206,6 @@ const handleClose = () => {
       // catch error
     });
 };
-onBeforeUnmount(() => {
-  socket.close();
-  socket = null;
-  console.log("退出聊天界面");
-});
 </script>
 <style lang="scss" scoped>
 .home-view {
@@ -301,23 +253,13 @@ onBeforeUnmount(() => {
     }
 
     /* 右侧消息记录面板*/
-
     .message-panel {
       width: 700px;
       height: 800px;
       position: relative;
+
       .msg-list {
         height: 620px;
-      }
-      .input-box {
-        width: 100%;
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* 将容器分为两列 */
-        grid-gap: 0; /* 列之间的间隙 */
-        align-items: center; /* 垂直居中对齐 */
-        #msgInput {
-          overflow: hidden;
-        }
       }
     }
 

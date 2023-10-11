@@ -4,10 +4,10 @@ export const useUserStore = defineStore('userStore', {
     state: () => {
         return {
             baseInfo: {
-                id: -1,
-                name: '',
-                nikeName: '',
-                email: '',
+                id: 4,
+                name: 'as',
+                nikeName: 'as',
+                email: 'as',
                 avatar: '',
                 createTime: ''
             }
