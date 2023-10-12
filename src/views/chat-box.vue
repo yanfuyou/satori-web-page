@@ -104,7 +104,7 @@ import { Promotion, CirclePlus, Search } from "@element-plus/icons-vue";
 import { ElMessageBox } from "element-plus";
 import { io } from "socket.io-client";
 import { useUserStore } from "../store/useUserStore";
-import { getGroupList } from "../api/user-chat-api";
+import { getGroupList, getFriendList } from "../api/user-chat-api";
 
 const receiverId = ref("");
 
@@ -139,7 +139,9 @@ sessionList.length = 0;
 let socket;
 onMounted(async () => {
   await refreshSessionList();
-  handleSessionSwitch(sessionList[0]);
+  if (sessionList.length != 0) {
+    handleSessionSwitch(sessionList[0]);
+  }
 });
 // 切换会话
 const handleSessionSwitch = (session) => {
@@ -163,21 +165,38 @@ const deleteSession = (session) => {
 };
 
 const refreshSessionList = async () => {
-  await getGroupList({ userId: userStore.getUser.id }).then((res) => {
-    for (const session of res.data) {
-      sessionList.push({
-        id: session.id,
-        name: session.groupName,
-        avatar: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-        createUserId: session.createUserId,
-        process: session.process,
-        type: session.type,
-        createTime: new Date(session.createTime).toLocaleDateString(),
-        joinTime: new Date(session.joinTime).toLocaleDateString(),
-        sessionType:"group"
-      });
-    }
-  });
+  sessionList.length = 0;
+  if (listFlag.value === "group") {
+    await getGroupList({ userId: userStore.getUser.id }).then((res) => {
+      for (const session of res.data) {
+        sessionList.push({
+          id: session.id,
+          name: session.groupName,
+          avatar: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+          createUserId: session.createUserId,
+          process: session.process,
+          type: session.type,
+          createTime: new Date(session.createTime).toLocaleDateString(),
+          joinTime: new Date(session.joinTime).toLocaleDateString(),
+          sessionType: "group",
+        });
+      }
+    });
+  } else {
+    await getFriendList({ userId: userStore.getUser.id }).then((res) => {
+      console.log(res.data)
+      for(const session of res.data){
+        sessionList.push({
+          id: session.id,
+          name: session.nikeName,
+          avatar: session.userAvatar,
+          type: session.type,
+          createTime: new Date(session.createTime).toLocaleDateString(),
+          sessionType: "user",
+        });
+      }
+    });
+  }
 };
 
 // 新增会话
@@ -196,6 +215,7 @@ const changeFriendList = () => {
   } else {
     listFlag.value = "user";
   }
+  refreshSessionList();
 };
 
 const handleClose = () => {

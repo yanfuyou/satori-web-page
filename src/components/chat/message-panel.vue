@@ -61,13 +61,13 @@ watch(props.activeSession, async (currentSession)=>{
         groupUsers.push(res.data[i]);
       }
     });
-    await getMessageHistory({userId:userStore.getUser.id,receiverId:currentSession.id,receiverType:sessionType }).then(res =>{
+  }
+  await getMessageHistory({userId:userStore.getUser.id,receiverId:currentSession.id,receiverType:sessionType }).then(res =>{
       messages.length = 0;
       for(let i =0;i<res.data.length;i++){
         messages.push(res.data[i]);
       }
     });
-  }
 })
 
 

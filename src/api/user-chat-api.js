@@ -55,3 +55,17 @@ export function getMessageHistory(params) {
     })
 
 }
+
+/**
+ * 
+ * @param {userId:number} params 
+ * @returns 
+ */
+
+export function getFriendList(params){
+    return request({
+        url: '/api/user/friend/list',
+        method: 'GET',
+        params
+    })
+}
