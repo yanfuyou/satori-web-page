@@ -10,7 +10,7 @@
 <script setup>
 import { computed, reactive, onMounted, watch } from "vue";
 import "../../assets/css/litewebchat.min.css";
-import { beforeRenderingHTML,renderMessageHtml } from "../../assets/js/render.js";
+import { beforeRenderingHTML, renderMessageHtml } from "../../assets/js/render.js";
 import { useUserStore } from "../../store/useUserStore";
 const itemStyle = reactive({
   margin: "auto auto 0 auto",
@@ -18,73 +18,33 @@ const itemStyle = reactive({
 
 const userStore = useUserStore();
 
-const props = defineProps(["messages"]);
+const props = defineProps(["messages","sessionChange"]);
 
 let htmls = [];
-// const messages = computed(()=>{
-//   const htmls = [];
-//   props.messages.forEach((item) => {
-//     const msg = {};
-//     msg.messageType = "text";
-//     msg.headIcon = "https://s2.loli.net/2023/10/11/zLcrbPQnNuHRv6U.png";
-//     msg.name = item.senderId + "";
-//     msg.position = item.senderId == userStore.getUser.id ? "right" : "left";
-//     msg.html = item.messageContent;
-//     htmls.push(msg);
-//   });
-//   return htmls;
-// })
-
+watch(props.sessionChange,(flag) => {
+  htmls = beforeRenderingHTML([], ".lite-chatbox");
+})
 watch(props.messages, (newMessages) => {
-  //刷新消息
-  htmls.length = 0;
-  console.log('收到新消息')
+  // //刷新消息
+  // if(newMessages.length ==0 ){
+  //   htmls.length = 0;
+  //   htmls = beforeRenderingHTML([], ".lite-chatbox");
+  //   return;
+  // }
   newMessages.forEach((item) => {
-    const msg = {};
-    msg.messageType = "text";
-    msg.headIcon = "https://s2.loli.net/2023/10/11/zLcrbPQnNuHRv6U.png";
-    msg.name = item.senderId + "";
-    msg.position = item.senderId == userStore.getUser.id ? "right" : "left";
-    msg.html = item.messageContent;
-    htmls.push(msg)
+    if (htmls.length ==0 || item.id > htmls[htmls.length - 1].id) {
+      const msg = {};
+      msg.id = item.id;
+      msg.messageType = "text";
+      msg.headIcon = "https://s2.loli.net/2023/10/11/zLcrbPQnNuHRv6U.png";
+      msg.name = item.senderId + "";
+      msg.position = item.senderId == userStore.getUser.id ? "right" : "left";
+      msg.html = item.messageContent;
+      htmls.push(msg);
+    }
   });
   htmls = beforeRenderingHTML(htmls, ".lite-chatbox");
-    console.log(htmls)
 });
-
-// const htmls = [
-//   {
-//     messageType: "tipsDanger",
-//     html:
-//       "从我做过的类聊天需求来看，聊天消息要么是纯文本，要么是富文本。所以我抽离出来的消息渲染组件默认了消息是富文本。如果想发送HTML请自行魔改。",
-//   },
-//   {
-//     messageType: "raw",
-//     headIcon: "https://s2.loli.net/2023/10/11/zLcrbPQnNuHRv6U.png",
-//     name: "图片消息2",
-//     position: "left",
-//     html: `<img src="./img/img.png"><br>图片带文字是可以的 <del>（废话）</del>`,
-//   },
-//   {
-//     messageType: "text",
-//     headIcon: "./img/A.jpg",
-//     name: "全符号测试",
-//     position: "right",
-//     html: "。，；？：！‘’“”@ˆ.,;?:!'\"〝〞﹫ˇ",
-//   },
-// ];
-// onMounted(() => {
-//   props.messages.forEach((item) => {
-//     const msg = {};
-//     msg.messageType = "text";
-//     msg.headIcon = "https://s2.loli.net/2023/10/11/zLcrbPQnNuHRv6U.png";
-//     msg.name = item.senderId + "";
-//     msg.position = item.senderId == userStore.getUser.id ? "right" : "left";
-//     msg.html = item.messageContent;
-//     htmls.push(msg);
-//   });
-//   beforeRenderingHTML(htmls, ".lite-chatbox");
-// });
 </script>
 
 <style scoped lang="scss"></style>

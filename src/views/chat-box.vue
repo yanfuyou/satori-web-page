@@ -151,6 +151,7 @@ const handleSessionSwitch = (session) => {
   activeSession.type = session.type;
   activeSession.createTime = session.createTime;
   activeSession.joinTime = session.joinTime;
+  activeSession.sessionType = session.sessionType;
 };
 
 const deleteSession = (session) => {
@@ -173,6 +174,7 @@ const refreshSessionList = async () => {
         type: session.type,
         createTime: new Date(session.createTime).toLocaleDateString(),
         joinTime: new Date(session.joinTime).toLocaleDateString(),
+        sessionType:"group"
       });
     }
   });
@@ -190,7 +192,6 @@ const handleCreateSession = () => {
 const changeFriendList = () => {
   //去后台拉取对应的列表
   if (listFlag.value === "user") {
-    // sessionList.value=
     listFlag.value = "group";
   } else {
     listFlag.value = "user";

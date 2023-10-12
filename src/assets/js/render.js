@@ -14,6 +14,11 @@ const TitleType = {
 export function beforeRenderingHTML(data, chatboxClass) {
   let htmlStr = '';
   let chatBox = document.querySelector(chatboxClass);
+  if(data.length == 0){
+    while(chatBox.firstChild){
+      chatBox.removeChild(chatBox.firstChild)
+    }
+  }
   for (let i = 0; i < data.length; i++) {
     if (data[i].isRender) {
       continue;
@@ -29,7 +34,7 @@ export function beforeRenderingHTML(data, chatboxClass) {
   chatBox.insertAdjacentHTML('beforeend',htmlStr);
   setTimeout(() => {
     if (chatBox.scrollHeight > chatBox.clientHeight) {
-      // chatBox.scrollTop = chatBox.scrollHeight;
+      chatBox.scrollTop = chatBox.scrollHeight;
       chatBox = '';
       htmlStr = '';
     }

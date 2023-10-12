@@ -7,7 +7,7 @@
   <el-row class="session-messages">
     <el-col :span="24">
       <div class="message-box">
-        <message-item :messages="messages" />
+        <message-item :messages="messages" :sessionChange="sessionChange"/>
       </div>
     </el-col>
   </el-row>
@@ -48,10 +48,12 @@ const activeSession = computed(() => {
 //群用户
 const groupUsers = reactive([{}]);
 
-
-//切换会话框刷新用户组
+const sessionChange = reactive({flag:false})
+//切换会话框刷新用户和消息
 watch(props.activeSession, async (currentSession)=>{
-  if(currentSession.type ===2 ){
+  sessionChange.flag = !sessionChange.flag;
+  const sessionType = currentSession.sessionType === "group" ? 2 : 1; 
+  if(sessionType === 2 ){
     //拉取群用户信息
     await getGroupUsers({groupId:currentSession.id}).then(res => {
       groupUsers.length = 0;
@@ -59,7 +61,7 @@ watch(props.activeSession, async (currentSession)=>{
         groupUsers.push(res.data[i]);
       }
     });
-    await getMessageHistory({userId:userStore.getUser.id,receiverId:currentSession.id,receiverType:currentSession.type}).then(res =>{
+    await getMessageHistory({userId:userStore.getUser.id,receiverId:currentSession.id,receiverType:sessionType }).then(res =>{
       messages.length = 0;
       for(let i =0;i<res.data.length;i++){
         messages.push(res.data[i]);
@@ -79,8 +81,8 @@ onMounted(() => {
   // 查询自己的聊天会话
   socket.onmessage = function (msg) {
     const msgBody = JSON.parse(msg.data)
-    // console.log(msgBody);
-    messages.push({
+    if(msgBody.id != undefined){
+      messages.push({
       id:msgBody.id,
       createTime: new Date(),
       messageContent: msgBody.content,
@@ -89,6 +91,7 @@ onMounted(() => {
       senderId: msgBody.senderId,
       receiverType: msgBody.messageType
     })
+    }
   };
   socket.onclose = function () {
     console.log("websocket已关闭");
@@ -107,23 +110,14 @@ onBeforeUnmount(() => {
 });
 
 const send = () => {
-  console.log(activeSession)
   let msgBody = {
     content: intputMsg.value,
     userId: userStore.getUser.id,
     receiverId: activeSession.value.id,
-    sendType: activeSession.value.type,
+    sendType: activeSession.value.sessionType === "group" ? 2 : 1
   };
   socket.send(JSON.stringify(msgBody));
-  messages.push({
-      id:msgBody.id,
-      createTime: new Date(),
-      messageContent: intputMsg.value,
-      parentMessageId: 0,
-      receiverId: activeSession.value.id,
-      senderId: userStore.getUser.id,
-      receiverType: activeSession.value.type,
-    })
+  intputMsg.value = '';
 };
 </script>
 <style scoped lang="scss">
