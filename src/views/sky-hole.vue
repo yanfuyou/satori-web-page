@@ -98,7 +98,6 @@ const StarrySky = (function () {
         starSpeedLevel = 0.0005;
         focalDistance = canvasWidth * focalDistanceLevel;
         starCount = Math.ceil(canvasWidth * starCountLevel);
-        starCount = 1;
         starList = [];
         for (let i = 0; i < starCount; i++) {
           const starTemp = {
@@ -180,8 +179,7 @@ const StarrySky = (function () {
     //设置星星数量等级
     setStarCountLevel: function (star_count_level = 0.2) {
       starCountLevel = star_count_level;
-      //   const starCount2 = Math.ceil(canvasWidth * starCountLevel);
-      const starCount2 = 3;
+      const starCount2 = Math.ceil(canvasWidth * starCountLevel);
       if (starCount > starCount2) {
         starList.splice(starCount2);
       } else {

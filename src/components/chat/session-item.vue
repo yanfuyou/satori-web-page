@@ -17,7 +17,9 @@
     <div class="btn-wrapper">
       <el-icon :size="15" class="close">
         <el-popconfirm
-          title="确认退出该群聊"
+          :title="tips"
+          confirm-button-text="确认"
+          cancel-button-text="取消"
           @confirm="handleDeleteSession"
         >
           <template #reference>
@@ -30,6 +32,7 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
 import { CircleClose } from "@element-plus/icons-vue";
 import { exitGroup, deletedFriend } from "../../api/user-api.js";
 
@@ -44,8 +47,12 @@ const prop = defineProps<{
     name: string;
     avatar: string;
     joinTime: Date;
+    sessionType: string;
   };
 }>();
+const tips = computed(()=>{
+  return prop.session.sessionType === 'group' ? '退出当前群聊？' : '删除该好友？';
+})
 // 定义删除事件，当触发删除事件时会向外部发送被删除的会话。
 const emit = defineEmits(["deleteSession"]);
 // 当鼠标放到会话上时，会弹出删除图标，点击删除图标调用删除接口并发送删除事件。

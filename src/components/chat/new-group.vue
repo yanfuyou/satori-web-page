@@ -28,7 +28,7 @@ import { createGroup } from "../../api/user-chat-api.js";
 import { reactive } from "vue";
 import { useUserStore } from "../../store/useUserStore";
 const userStore = useUserStore();
-const emit = defineEmits(["refreshSessionList"]);
+const emit = defineEmits(["refreshSessionList","closeDialog"]);
 
 const groupBody = reactive({
   name: "",
@@ -46,6 +46,7 @@ const onSubmit = () => {
     description: groupBody.description,
   }).then((res) => {
     emit('refreshSessionList')
+    emit('closeDialog')
   });
 };
 </script>

@@ -52,6 +52,18 @@ export function getUserInfo(userId){
 }
 
 /**
+ * 添加群聊
+ * @param {*} data 
+ */
+export function joinGroup(data){
+    return request({
+        url: '/api/user/group/member/add',
+        method: 'POST',
+        data
+    })
+}
+
+/**
  * 退出群聊
  * @param {object} params 
  * @returns 
@@ -61,6 +73,18 @@ export function exitGroup(params){
         url:'/api/user/group/member/exit',
         method: 'GET',
         params
+    })
+}
+
+/**
+ * 添加好友
+ * @param {*} data 
+ */
+export function addFriend(data){
+    return request({
+        url: '/api/user/friend/add',
+        method: 'POST',
+        data
     })
 }
 

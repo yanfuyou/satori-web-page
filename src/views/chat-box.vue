@@ -47,28 +47,28 @@
         </div>
       </div>
     </div>
-    <el-dialog :model-value="visible" width="30%" :show-close="showClose">
+    <el-dialog v-model="visible" width="30%" :show-close="false">
       <el-tabs type="border-card">
         <el-tab-pane label="查找">
           <div>
             <el-input
-              v-model="searchForm.searchKeyword"
+              v-model="searchForm.keyword"
               placeholder="Please input"
               class="input-with-select"
             >
               <template #prepend>
                 <el-select
-                  v-model="searchForm.searchType"
+                  v-model="searchForm.type"
                   placeholder="Select"
                   style="width: 115px"
                 >
-                  <el-option label="综合" value="0" />
+                  <!-- <el-option label="综合" value="0" /> -->
                   <el-option label="用户" value="1" />
                   <el-option label="用户组" value="2" />
                 </el-select>
               </template>
               <template #append>
-                <el-button :icon="Search" />
+                <el-button @click="searchFriend" :icon="Search" />
               </template>
             </el-input>
             <!-- 搜索结果 -->
@@ -82,12 +82,12 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="新建">
-          <new-group @refresh-session-list="refreshSessionList" />
+          <new-group @refresh-session-list="refreshSessionList" @close-dialog="closeDialog"/>
         </el-tab-pane>
       </el-tabs>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="visible = false">取消</el-button>
+          <el-button @click="closeDialog">取消</el-button>
           <!-- <el-button type="primary" @click="visible = false"> 确认 </el-button> -->
         </span>
       </template>
@@ -104,7 +104,7 @@ import { Promotion, CirclePlus, Search } from "@element-plus/icons-vue";
 import { ElMessageBox } from "element-plus";
 import { io } from "socket.io-client";
 import { useUserStore } from "../store/useUserStore";
-import { getGroupList, getFriendList } from "../api/user-chat-api";
+import { getGroupList, getFriendList, groupPage, friendPage } from "../api/user-chat-api";
 
 const receiverId = ref("");
 
@@ -113,22 +113,50 @@ const ChatSession = {};
 const isEdit = ref(false);
 const userStore = useUserStore();
 const visible = ref(false);
-const showClose = false;
 const searchForm = ref({
-  searchType: "0",
-  searchKeyword: "",
+  type: "1",
+  keyword: "",
 });
 
 const searchResult = reactive([{}]);
 
-searchResult.push({
-  id: 1,
-  name: "helloWorld1",
-  category: "group",
-  desc: "这是一个群",
-  picture: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
-});
-
+//好友搜索
+const searchFriend = () => {
+  searchResult.length = 0;
+  const searchData = {
+    keyword: searchForm.value.keyword,
+    page: 1,
+    size: 1000,
+  };
+  if (searchForm.value.type === "1") {
+    friendPage(searchData).then((res) => {
+      for (const item of res.data.records) {
+        searchResult.push({
+          id: item.id,
+          name: item.nikeName,
+          email: item.userEmail,
+          avatar: item.userAvatar,
+          createTime: new Date(item.createTime).toLocaleDateString(),
+          resultType: 'user'
+        })
+      }
+    });
+  } else {
+    groupPage(searchData).then((res) => {
+      for (const item of res.data.records) {
+        searchResult.push({
+          id: item.id,
+          name: item.groupName,
+          desc: item.desc,
+          avatar: item.userAvatar,
+          userCount: item.userCount,
+          createTime: new Date(item.createTime).toLocaleDateString(),
+          resultType:'group'
+        })
+      }
+    });
+  }
+};
 //切换列表
 let listFlag = ref("user");
 
@@ -184,8 +212,7 @@ const refreshSessionList = async () => {
     });
   } else {
     await getFriendList({ userId: userStore.getUser.id }).then((res) => {
-      console.log(res.data)
-      for(const session of res.data){
+      for (const session of res.data) {
         sessionList.push({
           id: session.id,
           name: session.nikeName,
@@ -197,24 +224,27 @@ const refreshSessionList = async () => {
       }
     });
   }
+  if (sessionList.length != 0) {
+    handleSessionSwitch(sessionList[0]);
+  }
 };
 
 // 新增会话
 const handleCreateSession = () => {
+  searchResult.length = 0;
+  searchFriend();
   visible.value = true;
-  // const res = await saveChatSession({ name: "新的聊天" });
-  // sessionList.value.unshift((await findChatSessionById(res.result)).result);
-  // sessionList.value.unshift({id: 5, name: '会话5', updatedAt: '2023-08-20', messages: ['123']});
+  refreshSessionList();
 };
 
 // 切换好友列表
 const changeFriendList = () => {
-  //去后台拉取对应的列表
   if (listFlag.value === "user") {
     listFlag.value = "group";
   } else {
     listFlag.value = "user";
   }
+  //刷新当前列表
   refreshSessionList();
 };
 
@@ -227,6 +257,11 @@ const handleClose = () => {
       // catch error
     });
 };
+
+const closeDialog = ()=>{
+  visible.value = false;
+  refreshSessionList();
+}
 </script>
 <style lang="scss" scoped>
 .home-view {

@@ -69,3 +69,24 @@ export function getFriendList(params){
         params
     })
 }
+
+/**
+ * 
+ * @param {page:number,size:number,keywork:string} data 
+ * @returns 
+ */
+export function groupPage(data){
+    return request({
+        url: '/api/user/group/search/page',
+        method: 'POST',
+        data
+    })
+}
+
+export function friendPage(data){
+    return request({
+        url: '/api/user/search/page',
+        method: 'POST',
+        data 
+    })
+}
