@@ -1,50 +1,40 @@
 <script setup>
-import {AppMian, NavBar, Footer} from './components'
+import { AppMian, NavBar, Footer } from "./components";
 </script>
 
 <template>
   <div class="app-wrapper">
     <div id="nav">
-      <NavBar/>
+      <NavBar />
     </div>
     <div id="main">
-      <AppMian/>
+      <AppMian />
     </div>
     <div id="footer">
-      <Footer/>
+      <Footer />
     </div>
   </div>
 </template>
 
 <style scoped>
-.app-wrapper {
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  box-sizing: border-box;
+#main {
+  flex: 1;
+  margin-top: 61px;
 }
-/* #nav,#main,#footer{
-  display: flex;
-  justify-content: center;
-} */
-#nav{
+
+#nav {
   width: 100%;
-  top: 0;
   height: 60px;
+  z-index: 100;
+  top: 0;
   position: fixed;
-  background-color: black;
-  z-index: 1;
-  box-sizing: border-box;
 }
-#main{
-  height: 80%;
-  margin-top: 65px;
-  justify-content: center;
-  box-sizing: border-box;
-}
-#footer{
-  /* height: 10%; */
-  bottom: 0;
-  box-sizing: border-box;
+#footer {
+  width: 100%;
+  height: 20px;
+  text-align: center;
+  bottom: 2px;
+  position: fixed;
+  z-index: 50;
 }
 </style>

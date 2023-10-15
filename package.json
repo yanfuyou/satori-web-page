@@ -12,6 +12,7 @@
     "@wangeditor/editor-for-vue": "^5.1.12",
     "axios": "^1.4.0",
     "element-plus": "^2.3.9",
+    "fabric": "^5.3.0",
     "js-cookie": "^3.0.5",
     "pinia": "^2.1.6",
     "socket.io-client": "^4.0.0",

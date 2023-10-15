@@ -1,22 +1,16 @@
-<script setup>
-
-</script>
-
 <template>
 
-  <div id="footer">
-    {{ 'this is footer' }}
+  <div id="footer-content" v-html="footerHtml">
   </div>
 </template>
+<script setup>
+import { ref,computed } from 'vue';
+
+const footerHtml = computed(()=>{
+  const html = '<span>&copy ' + new Date().getFullYear() + ' cat_y' + '</span>';
+  return html;
+})
+</script>
 
 <style scoped>
-#footer{
-  height: 20px;
-  width: 100%;
-  text-align: center;
-  position: absolute;
-  bottom: 2px;
-  //border-style: dashed;
-  //border-color: black;
-}
 </style>

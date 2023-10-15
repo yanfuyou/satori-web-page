@@ -1,14 +1,12 @@
 <template>
-  <div id="appMain">
+  <div id="app-main">
     <router-view/>
   </div>
 </template>
 
 <style scoped>
-#appMain {
-  width: 100%;
-  height: auto;
-  text-align: center;
-  box-sizing: border-box;
+#app-main {
+ width: 100%;
+ height: 100%;
 }
 </style>

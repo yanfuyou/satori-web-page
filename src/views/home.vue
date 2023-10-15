@@ -118,7 +118,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref,reactive, computed } from "vue";
+import { onMounted, onBeforeMount, ref,reactive, computed } from "vue";
 import scrollTable from "../components/table/scroll-table.vue";
 import { getParamValueByName, requestThirdUrlGet } from "../api/system-api.js";
 import { useSystemStore } from "../store/useSystemStore";
@@ -133,7 +133,7 @@ const beautyWords = reactive({
 })
 const loading = ref(false);
 const currentDate = new Date().toDateString();
-
+let timerId;
 const covertWords = computed(()=>{
   const { created_at } = beautyWords;
   const date = new Date(Number(created_at + '000'));
@@ -152,11 +152,14 @@ onMounted(() => {
     systemStore.updateBeautyWordsUrl(res.data);
   });
   changeWords();
-  // setInterval(()=>{
-  //   changeWords();
-  // },10 * 1000);
+  timerId = setInterval(()=>{
+    changeWords();
+  },2000);
 });
 
+onBeforeMount(()=>{
+  clearTimeout(timerId);
+})
 const changeWords = () => {
   //随机选择类型
   const wordsType = systemStore.getBeautyWordsType;

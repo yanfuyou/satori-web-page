@@ -56,9 +56,6 @@ const bye = ()=>{
 </script>
 <style scoped>
 #nav {
-  height: 5%;
-  width: 100%;
-  text-align: center;
   #logo{
     clear: both;
     float: left !important;
