@@ -9,5 +9,5 @@
 </template>
 
 <style>
-@import "assets/app.css";
+@import "assets/css/app.css";
 </style>
