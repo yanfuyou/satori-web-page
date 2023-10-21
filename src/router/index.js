@@ -26,6 +26,10 @@ const routes = [
             {
                 path: 'sky-hole',
                 component: () => import('@/views/sky-hole.vue')
+            },
+            {
+                path: 'test',
+                component: () =>import('@/views/test-page.vue')
             }
         ]
     },

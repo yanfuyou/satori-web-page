@@ -1,35 +1,40 @@
 <template>
   <div id="home">
     <el-row>
-      <el-col :span="4">
+      <el-col :span="3">
         <div class="grid-content ep-bg-purple none"></div>
       </el-col>
-      <el-col :span="10">
+      <el-col :span="13">
         <div class="grid-content ep-bg-purple one-word" @click="changeWords">
-        <table class="hitokoto">
-          <tr>
-            <td>
-              <el-text>{{ covertWords.hitokoto }}</el-text>
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td>
-              <el-text>@{{ covertWords.from_who == null ? '陌生人' : covertWords.from_who }}{{'<<'+ covertWords.from +'>>'}}</el-text>
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td>
-              <el-text>{{ covertWords.created_at }}</el-text>
-            </td>
-          </tr>
-        </table>
+          <table class="hitokoto">
+            <tr>
+              <td>
+                <el-text>{{ covertWords.hitokoto }}</el-text>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                <el-text
+                  >@{{ covertWords.from_who == null ? "陌生人" : covertWords.from_who
+                  }}{{ "<<" + covertWords.from + ">>" }}</el-text
+                >
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td>
+                <el-text>{{ covertWords.created_at }}</el-text>
+              </td>
+            </tr>
+          </table>
         </div>
       </el-col>
-      <el-col :span="9">
-        <div class="grid-content ep-bg-purple anno">写公告</div>
+      <el-col :span="8">
+        <div class="grid-content ep-bg-purple anno">
+        <div v-html="noticeHtml"></div>
+        </div>
       </el-col>
     </el-row>
     <el-row>
@@ -118,48 +123,56 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onBeforeMount, ref,reactive, computed } from "vue";
+import { onMounted, onBeforeMount, ref, reactive, computed } from "vue";
 import scrollTable from "../components/table/scroll-table.vue";
 import { getParamValueByName, requestThirdUrlGet } from "../api/system-api.js";
 import { useSystemStore } from "../store/useSystemStore";
 const systemStore = useSystemStore();
-const titleOne = ref('踩过的坑');
-const titleMore = ref('更多');
+const titleOne = ref("踩过的坑");
+const titleMore = ref("更多");
 const beautyWords = reactive({
-  created_at:'1696014986',
-  from: '',
-  from_who: '',
-  hitokoto:''
-})
+  created_at: "1696014986",
+  from: "",
+  from_who: "",
+  hitokoto: "",
+});
 const loading = ref(false);
 const currentDate = new Date().toDateString();
 let timerId;
-const covertWords = computed(()=>{
+const covertWords = computed(() => {
   const { created_at } = beautyWords;
-  const date = new Date(Number(created_at + '000'));
-  beautyWords.created_at = date.getFullYear() + '/' 
-  + (date.getMonth()+1).toString().padStart(2,'0') + '/' 
-  + date.getDate().toString().padStart(2,'0') + ' ' 
-  + date.getHours().toString().padStart(2,'0') +':' 
-  + date.getMinutes().toString().padStart(2,'0') +':' 
-  + date.getSeconds().toString().padStart(2,'0');
-  return beautyWords; 
-})
-
+  const date = new Date(Number(created_at + "000"));
+  beautyWords.created_at =
+    date.getFullYear() +
+    "/" +
+    (date.getMonth() + 1).toString().padStart(2, "0") +
+    "/" +
+    date.getDate().toString().padStart(2, "0") +
+    " " +
+    date.getHours().toString().padStart(2, "0") +
+    ":" +
+    date.getMinutes().toString().padStart(2, "0") +
+    ":" +
+    date.getSeconds().toString().padStart(2, "0");
+  return beautyWords;
+});
+const noticeHtml = ref('');
 
 onMounted(() => {
   getParamValueByName("hitokoto_url").then((res) => {
     systemStore.updateBeautyWordsUrl(res.data);
   });
   changeWords();
-  timerId = setInterval(()=>{
+  timerId = setInterval(() => {
     changeWords();
-  },2000);
+  }, 2000);
+  //获取服务器文本
+  noticeHtml.value = "<p>你说啥呢<a href='https://www.baidu.com'>百度</a></p>" +"<button plain onclick='alert()'>Plain</button>";
 });
 
-onBeforeMount(()=>{
+onBeforeMount(() => {
   clearTimeout(timerId);
-})
+});
 const changeWords = () => {
   //随机选择类型
   const wordsType = systemStore.getBeautyWordsType;
@@ -258,21 +271,22 @@ const tableData = ref([
     min-height: 100px;
   }
 
-  .one-word {
+  .one-word,.anno {
     text-align: center;
     height: 100px;
     border: blanchedalmond solid;
     .el-text {
       font-family: "STXingkai";
     }
-    .hitokoto{
+    .hitokoto {
       margin: 10px auto auto 10px;
     }
   }
 
   .anno {
-    background-color: aqua;
-    height: 100px;
+    text-align: left;
+    width: 380px;
+    margin-left: 20px;
   }
 }
 

@@ -23,7 +23,7 @@
         <el-menu-item index="/worker">工作坑</el-menu-item>
         <el-menu-item index="/chat">聊天室</el-menu-item>
         <el-menu-item index="/stander">吾道坑</el-menu-item>
-        <el-menu-item index="/old">过来人</el-menu-item>
+        <el-menu-item index="/test">测试</el-menu-item>
         <el-menu-item index="/write">写</el-menu-item>
         <el-menu-item index="/search">让我加点儿坑</el-menu-item>
       </el-sub-menu>
