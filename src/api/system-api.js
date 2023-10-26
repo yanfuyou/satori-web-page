@@ -33,3 +33,11 @@ export function requestThirdUrlPost(url,body){
         body
     })
 }
+
+export function fileUpload(data){
+    return request({
+        url:'/api/system/file/upload',
+        method:'POST',
+        data
+    })
+}
