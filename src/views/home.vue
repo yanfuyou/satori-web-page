@@ -33,7 +33,7 @@
       </el-col>
       <el-col :span="8">
         <div class="grid-content ep-bg-purple anno">
-        <div v-html="noticeHtml"></div>
+          <div v-html="noticeHtml"></div>
         </div>
       </el-col>
     </el-row>
@@ -94,7 +94,7 @@
     <el-row>
       <el-col :span="10">
         <div>
-          <scroll-table :table-data="tableData" />
+          <scroll-table @loadMore="loadMore" :table-data="tableData" ref="tableOne"/>
         </div>
       </el-col>
       <el-col :span="2">
@@ -123,10 +123,12 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onBeforeMount, ref, reactive, computed } from "vue";
+import { onMounted, onBeforeUnmount, ref, reactive, computed } from "vue";
 import scrollTable from "../components/table/scroll-table.vue";
 import { getParamValueByName, requestThirdUrlGet } from "../api/system-api.js";
+import { contentListPage } from "../api/content-api";
 import { useSystemStore } from "../store/useSystemStore";
+const tableOne = ref();
 const systemStore = useSystemStore();
 const titleOne = ref("踩过的坑");
 const titleMore = ref("更多");
@@ -139,6 +141,15 @@ const beautyWords = reactive({
 const loading = ref(false);
 const currentDate = new Date().toDateString();
 let timerId;
+
+const pageRequest = {
+  page: 1,
+  size: 10,
+  keyWord: null,
+  startTime: null,
+  endTime: null,
+};
+
 const covertWords = computed(() => {
   const { created_at } = beautyWords;
   const date = new Date(Number(created_at + "000"));
@@ -156,7 +167,12 @@ const covertWords = computed(() => {
     date.getSeconds().toString().padStart(2, "0");
   return beautyWords;
 });
-const noticeHtml = ref('');
+const noticeHtml = ref("");
+
+const loadMore = (type) => {
+  pageRequest.page++;
+  getTableDate(type);
+};
 
 onMounted(() => {
   getParamValueByName("hitokoto_url").then((res) => {
@@ -167,12 +183,19 @@ onMounted(() => {
     changeWords();
   }, 2000);
   //获取服务器文本
-  noticeHtml.value = "<p>你说啥呢<a href='https://www.baidu.com'>百度</a></p>" +"<button plain onclick='alert()'>Plain</button>";
+  noticeHtml.value =
+    "<p>你说啥呢<a href='https://www.baidu.com'>百度</a></p>" +
+    "<button plain onclick='alert()'>Plain</button>";
+
+  //拉取表格数据
+  tableData.value = [];
+  getTableDate(0);
 });
 
-onBeforeMount(() => {
-  clearTimeout(timerId);
+onBeforeUnmount(() => {
+  clearInterval(timerId);
 });
+
 const changeWords = () => {
   //随机选择类型
   const wordsType = systemStore.getBeautyWordsType;
@@ -194,63 +217,21 @@ function show(str: number) {
   alert(str);
 }
 
-const tableData = ref([
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    address: "第一篇章",
-  },
-  {
-    date: "2016-05-02",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-04",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-01",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-01",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-01",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-01",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-01",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-01",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-01",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    date: "2016-05-01",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-]);
+const getTableDate = (type: number) => {
+  contentListPage(pageRequest).then((res) => {
+    if (res.data.records.length > 0) {
+      for (let c of res.data.records) {
+        tableData.value.push({
+          date:
+            c.createTime.substring(0, 11).replace("-", "年").replace("-", "月") + "日",
+          name: c.createUserId,
+          address: c.title,
+        });
+      }
+    }
+  });
+};
+const tableData = ref([{}]);
 </script>
 
 <style scoped>
@@ -271,7 +252,8 @@ const tableData = ref([
     min-height: 100px;
   }
 
-  .one-word,.anno {
+  .one-word,
+  .anno {
     text-align: center;
     height: 100px;
     border: blanchedalmond solid;
