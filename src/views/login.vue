@@ -1,5 +1,5 @@
 <template>
-  <el-row :gutter="20">
+  <el-row :gutter="20" justify="center">
     <el-col :span="6">
       <div class="grid-content ep-bg-purple">
         <el-image style="width: 100%; height: 100%" :src="seat" />
@@ -28,6 +28,7 @@
           <el-form-item>
             <el-input
               v-model="requestBody.password"
+              type="password"
               class="w-50 m-2"
               placeholder="密码"
               @blur="checkPwd"
@@ -36,6 +37,7 @@
           <el-form-item v-if="currentEvent === 'signUp'">
             <el-input
               v-model="requestBody.repeatPassword"
+              type="password"
               class="w-50 m-2"
               placeholder="重复密码"
               @blur="checkRepeatPwd"
@@ -46,16 +48,21 @@
               v-model="requestBody.validationCode"
               class="w-50 m-2"
               placeholder="验证码"
-              style="width: 50%;"
+              style="width: 50%"
               @blur="checkCode"
             />
             <div @click="changeCode">
-            <el-image  style="width: 150px; height: 60px" :src="'data:image/png;base64,' + captCode" />
+              <el-image
+                style="width: 150px; height: 60px"
+                :src="'data:image/png;base64,' + captCode"
+              />
             </div>
           </el-form-item>
           <el-form-item v-if="currentEvent === 'signIn'">
             <el-button type="primary" @click="signInSubmit">登录</el-button>
-            <el-text size="small" @click="currentEvent = 'signUp'">没有账号,注册一个</el-text>
+            <el-text size="small" @click="currentEvent = 'signUp'"
+              >没有账号,注册一个</el-text
+            >
           </el-form-item>
           <el-form-item v-else>
             <el-button type="primary" @click="signUpSubmit">注册</el-button>
@@ -142,8 +149,9 @@ const signUpSubmit = () => {
   ) {
     return false;
   }
-  const result = signUp(requestBody);
-  console.log(result);
+  signUp(requestBody).then(res=>{
+    showToast(true,'success','注册成功')
+  })
 };
 
 const signInSubmit = ()=>{
@@ -169,8 +177,12 @@ onMounted(()=>{
 </script>
 
 <style scoped>
-.el-text{
+
+.el-text {
   margin-top: 10px;
   padding-bottom: 0;
+}
+.el-row{
+  margin-top: 200px;
 }
 </style>

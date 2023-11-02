@@ -4,18 +4,18 @@ export const useUserStore = defineStore('userStore', {
     state: () => {
         return {
             baseInfo: {
-                id: 4,
-                name: 'as',
-                nikeName: 'as',
-                email: 'as',
-                avatar: '',
-                createTime: ''
+                id: null,
+                name: null,
+                nikeName: null,
+                email: null,
+                avatar: null,
+                createTime: null
             }
         }
     },
     getters: {
         getUser: (state) => state.baseInfo,
-        needSignin: (state) => state.baseInfo.id === -1
+        needSignin: (state) => state.baseInfo.id === null || state.baseInfo.id === undefined || state.baseInfo.id === -1
     },
     actions: {
         saveUser(userInfo, tokenVal) {
