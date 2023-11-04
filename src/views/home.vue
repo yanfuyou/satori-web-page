@@ -226,6 +226,7 @@ const getTableDate = (type: number) => {
             c.createTime.substring(0, 11).replace("-", "年").replace("-", "月") + "日",
           name: c.createUserId,
           address: c.title,
+          id: c.id
         });
       }
     }

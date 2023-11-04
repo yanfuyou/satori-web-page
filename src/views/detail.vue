@@ -1,13 +1,36 @@
-<script setup>
-import write from "@/components/editor/write.vue";
-const eType = "write"
-
-</script>
-
-
 <template>
   <div>
-    <write :type="eType"/>
+    <el-container>
+      <el-aside v-if="isDetail">
+        <div class="avatar">
+          
+        </div>
+      </el-aside>
+      <el-main>
+        <write :is-detail="isDetail" :content-id="contentId"/>
+      </el-main>
+    </el-container>
   </div>
-
 </template>
+
+<script setup>
+import { ref, computed, onBeforeMount, watch } from "vue";
+import { useRouter } from "vue-router";
+import write from "@/components/editor/write.vue";
+const router = useRouter()
+
+const queryStr = window.location.search;
+const params = new URLSearchParams(queryStr);
+const contentId = ref(null);
+const isDetail = computed(() => {
+  console.log(router.currentRoute.value.path)
+  return router.currentRoute.value.path === '/detail';
+});
+onBeforeMount(() => {
+  contentId.value = params.get("contentId");
+});
+//非常的不优雅
+watch(router.currentRoute, (newPath) =>{
+  router.go(0)
+})
+</script>

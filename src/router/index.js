@@ -20,6 +20,10 @@ const routes = [
                 component: ()=> import('@/views/detail.vue')
             },
             {
+                path: 'detail',
+                component: ()=> import('@/views/detail.vue')
+            },
+            {
                 path: 'chat',
                 component: ()=> import('@/views/chat-box.vue')
             },

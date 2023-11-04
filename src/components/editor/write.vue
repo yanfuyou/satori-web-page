@@ -1,15 +1,15 @@
 <template>
   <div style="border: 1px solid #ccc" class="editor">
     <Toolbar
-      v-if="type !== 'read'"
+      v-if="!isDetail"
       style="border-bottom: 1px solid #ccc"
       :editor="editorRef"
       :defaultConfig="toolbarConfig"
       :mode="mode"
     />
     <Editor
-      style="height: 500px; overflow-y: hidden"
-      v-model="valueHtml"
+      style="height: 700px; overflow-y: hidden"
+      v-model="htmlVal"
       :defaultConfig="editorConfig"
       :mode="mode"
       @onCreated="handleCreated"
@@ -18,29 +18,29 @@
 </template>
 <script setup>
 import "@wangeditor/editor/dist/css/style.css";
-import { onBeforeUnmount, ref, shallowRef, onMounted, getCurrentInstance } from "vue";
+import { onBeforeUnmount, ref, shallowRef, onMounted, getCurrentInstance, watch } from "vue";
 import { Boot } from '@wangeditor/editor'
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { fileUpload } from "@/api/system-api";
 import { contentUp } from "@/api/content-api";
 import { useUserStore } from "@/store/useUserStore";
+import { getDetail } from "@/api/content-api";
 const { showToast } = getCurrentInstance().appContext.config.globalProperties;
-
 const userStore = useUserStore();
-const editorType = defineProps({
-  type: String,
-});
+const props = defineProps(['isDetail','contentId']);
+
 // 编辑器实例，必须用 shallowRef
 const editorRef = shallowRef();
-const mode = "simple";
+const mode = ref('default');
 const toolbarConfig = {
   excludeKeys: ["fullScreen", "insertVideo"],
 };
 const editorConfig = { placeholder: "请输入内容" };
-// 内容 HTML
-const valueHtml = ref("");
-const imageServer = ref("");
-//插入图签
+const htmlVal = ref(null)
+const imageServer = ref(null);
+
+
+//插入图
 const setImgServer = (editorConfig) => {
   editorConfig.MENU_CONF["uploadImage"] = {
     async customUpload(file, insertFn) {
@@ -49,16 +49,15 @@ const setImgServer = (editorConfig) => {
       formData.append("type", "image");
       formData.append("privated", 0);
       fileUpload(formData).then((res) => {
-        console.log(res.data);
         insertFn(res.data[0].reqUrl, res.data[0].sourceName, res.data[0].reqUrl);
       });
-      // insertFn(url, poster)
     },
     fieldName: "file",
     maxFileSize: 5 * 1024 * 1024,
   };
 };
-class MyMenu {
+// 菜单保存按钮
+class SaveBtn {
   constructor() {
     this.title = "保存文章";
     // this.iconSvg = '<svg >...</svg>'
@@ -75,29 +74,42 @@ class MyMenu {
     return false; // or true
   }
   exec(editor, value) {
-    displayVal()
+    //nn的,这里记得传当前的editor
+    //不能在下面使用editorRef获取值,否则二次进入页面会拿不到编辑器的值
+    displayVal(editor)
   }
 }
-const test = {
+//自定义菜单
+const Save = {
   key: "save",
   factory() {
-    return new MyMenu();
+    return new SaveBtn();
   },
 };
-Boot.registerMenu(test);
 
+//初始化editor
 const handleCreated = (editor) => {
-  editorRef.value = editor; // 记录 editor 实例，重要！
-  setImgServer(editor.getConfig());
+  editorRef.value = editor;
+  setImgServer(editorRef.value.getConfig());
   editorRef.value.setHtml("<h1>标题</h1>");
+  if(props.isDetail){
+    editorRef.value.getConfig().readOnly=true;
+  }
+  //防止重复添加菜单
+  if(-1 == editor.getAllMenuKeys().indexOf('save')){
+    Boot.registerMenu(Save);
+  }
   toolbarConfig.insertKeys = {
     index:29,
     keys: ['save']
   }
 };
 
-const displayVal = () => {
-  const html = editorRef.value.getHtml();
+//文章内容保存
+const displayVal = (editor) => {
+  //存在获取到的内容不是最新的问题
+  const html = editor.getHtml();
+  console.log(html)
   if (html == null || html == undefined || html == "") {
     showToast(false, "waring", "内容不能为空喔");
     return;
@@ -124,17 +136,21 @@ const displayVal = () => {
 
 // 模拟 ajax 异步获取内容
 onMounted(() => {
-  setTimeout(() => {
-    // valueHtml.value = "<p>模拟 Ajax 异步设置内容</p>";
-  }, 1500);
+  if (props.contentId) {
+    getDetail(props.contentId).then((res) => {
+      //页面需要优化,考虑直接使用wangEditor的阅读模式,侧面展示用户信息
+      htmlVal.value = res.data.detail;
+    });
+  }
 });
 
 // 组件销毁时，也及时销毁编辑器
 onBeforeUnmount(() => {
-  const editor = editorRef.value;
-  if (editor == null) return;
-  editor.destroy();
+  if (editorRef.value == null) return;
+  editorRef.value.clear()
+  editorRef.value.destroy()
 });
+
 </script>
 
 <style scoped>

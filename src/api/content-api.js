@@ -15,3 +15,10 @@ export function contentListPage(data){
         data
     })
 }
+
+export function getDetail(id){
+    return request({
+        url: '/api/content/detail/' + id,
+        method: 'get'
+    })
+}

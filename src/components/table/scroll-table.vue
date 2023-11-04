@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-table :data="props.tableData" height="250" style="width: 100%" ref="tableRef">
+    <el-table :data="props.tableData" height="250" style="width: 100%" ref="tableRef" @row-click="jumpToDetail">
       <el-table-column prop="date" label="发布日期" width="150" />
       <el-table-column prop="name" label="发布者" width="80" />
       <el-table-column prop="address" label="关键词" />
@@ -10,6 +10,7 @@
 
 <script setup>
 import { ref, nextTick, onMounted } from "vue";
+import router from '@/router'
 
 const props = defineProps({
   tableData: Array,
@@ -18,8 +19,10 @@ const props = defineProps({
 const emit = defineEmits(["loadMore"]);
 
 const tableRef = ref();
-
-function bodyEvent(e) {
+const jumpToDetail = (row)=>{
+  router.push('/detail?contentId=' + row.id)
+}
+const bodyEvent=(e)=> {
   const scrollDirection = e.deltaY > 0 ? "down" : "up";
   if (scrollDirection === "down") {
     // 获取提供实际滚动的容器
@@ -34,7 +37,7 @@ function bodyEvent(e) {
     }
   }
 }
-function getTableData() {
+const getTableData = () =>{
   this.loading = true;
   axios
     .get(url)
