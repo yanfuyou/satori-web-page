@@ -18,27 +18,35 @@
 </template>
 <script setup>
 import "@wangeditor/editor/dist/css/style.css";
-import { onBeforeUnmount, ref, shallowRef, onMounted, getCurrentInstance, watch } from "vue";
-import { Boot } from '@wangeditor/editor'
+import {
+  onBeforeUnmount,
+  ref,
+  shallowRef,
+  onMounted,
+  getCurrentInstance,
+  watch,
+} from "vue";
+import { useRouter } from "vue-router";
+import { Boot } from "@wangeditor/editor";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { fileUpload } from "@/api/system-api";
 import { contentUp } from "@/api/content-api";
 import { useUserStore } from "@/store/useUserStore";
 import { getDetail } from "@/api/content-api";
+const router = useRouter();
 const { showToast } = getCurrentInstance().appContext.config.globalProperties;
 const userStore = useUserStore();
-const props = defineProps(['isDetail','contentId']);
+const props = defineProps(["isDetail", "contentId"]);
 
 // 编辑器实例，必须用 shallowRef
 const editorRef = shallowRef();
-const mode = ref('default');
+const mode = ref("default");
 const toolbarConfig = {
   excludeKeys: ["fullScreen", "insertVideo"],
 };
 const editorConfig = { placeholder: "请输入内容" };
-const htmlVal = ref(null)
+const htmlVal = ref(null);
 const imageServer = ref(null);
-
 
 //插入图
 const setImgServer = (editorConfig) => {
@@ -76,7 +84,7 @@ class SaveBtn {
   exec(editor, value) {
     //nn的,这里记得传当前的editor
     //不能在下面使用editorRef获取值,否则二次进入页面会拿不到编辑器的值
-    displayVal(editor)
+    displayVal(editor);
   }
 }
 //自定义菜单
@@ -92,24 +100,25 @@ const handleCreated = (editor) => {
   editorRef.value = editor;
   setImgServer(editorRef.value.getConfig());
   editorRef.value.setHtml("<h1>标题</h1>");
-  if(props.isDetail){
-    editorRef.value.getConfig().readOnly=true;
+  if (props.isDetail) {
+    editorRef.value.getConfig().readOnly = true;
+  }else{
+    editorRef.value.getConfig().readOnly = false;
   }
   //防止重复添加菜单
-  if(-1 == editor.getAllMenuKeys().indexOf('save')){
+  if (-1 == editor.getAllMenuKeys().indexOf("save")) {
     Boot.registerMenu(Save);
   }
   toolbarConfig.insertKeys = {
-    index:29,
-    keys: ['save']
-  }
+    index: 29,
+    keys: ["save"],
+  };
 };
 
 //文章内容保存
 const displayVal = (editor) => {
   //存在获取到的内容不是最新的问题
   const html = editor.getHtml();
-  console.log(html)
   if (html == null || html == undefined || html == "") {
     showToast(false, "waring", "内容不能为空喔");
     return;
@@ -147,10 +156,16 @@ onMounted(() => {
 // 组件销毁时，也及时销毁编辑器
 onBeforeUnmount(() => {
   if (editorRef.value == null) return;
-  editorRef.value.clear()
-  editorRef.value.destroy()
+  editorRef.value.destroy();
 });
 
+watch(router.currentRoute, (newRoute) => {
+  if (newRoute.path === '/write') {
+    editorRef.value.clear();
+    editorRef.value.getConfig().readOnly = false;
+    editorRef.value.setHtml("<h1>标题</h1>");
+  }
+});
 </script>
 
 <style scoped>

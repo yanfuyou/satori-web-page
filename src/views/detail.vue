@@ -23,14 +23,9 @@ const queryStr = window.location.search;
 const params = new URLSearchParams(queryStr);
 const contentId = ref(null);
 const isDetail = computed(() => {
-  console.log(router.currentRoute.value.path)
   return router.currentRoute.value.path === '/detail';
 });
 onBeforeMount(() => {
   contentId.value = params.get("contentId");
 });
-//非常的不优雅
-watch(router.currentRoute, (newPath) =>{
-  router.go(0)
-})
 </script>
