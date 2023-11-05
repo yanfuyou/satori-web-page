@@ -5,7 +5,7 @@ import request from "@/utils/request";
  * @param {object} signModel 
  * @returns 
  */
-export function signUp(signModel){
+export function signUp(signModel) {
     return request({
         url: '/api/user/sign_up',
         method: 'POST',
@@ -18,7 +18,7 @@ export function signUp(signModel){
  * @param {object} signModel 
  * @returns 
  */
-export function signIn(signModel){
+export function signIn(signModel) {
     return request({
         url: '/api/user/sign_in',
         method: 'POST',
@@ -28,10 +28,10 @@ export function signIn(signModel){
 
 /**
  * 退出登录
- * @param {number} userId 
+ * @param userId 
  * @returns 
  */
-export function signOut(userId){
+export function signOut(userId) {
     return request({
         url: '/api/user/sign_out/' + userId,
         method: 'GET',
@@ -44,7 +44,7 @@ export function signOut(userId){
  * @param {number} userId 
  * @returns 
  */
-export function getUserInfo(userId){
+export function getUserInfo(userId) {
     return request({
         url: '/api/user/get/' + userId,
         method: 'GET'
@@ -55,7 +55,7 @@ export function getUserInfo(userId){
  * 添加群聊
  * @param {*} data 
  */
-export function joinGroup(data){
+export function joinGroup(data) {
     return request({
         url: '/api/user/group/member/add',
         method: 'POST',
@@ -68,9 +68,9 @@ export function joinGroup(data){
  * @param {object} params 
  * @returns 
  */
-export function exitGroup(params){
+export function exitGroup(params) {
     return request({
-        url:'/api/user/group/member/exit',
+        url: '/api/user/group/member/exit',
         method: 'GET',
         params
     })
@@ -80,7 +80,7 @@ export function exitGroup(params){
  * 添加好友
  * @param {*} data 
  */
-export function addFriend(data){
+export function addFriend(data) {
     return request({
         url: '/api/user/friend/add',
         method: 'POST',
@@ -93,7 +93,7 @@ export function addFriend(data){
  * @param {object} params 
  * @returns 
  */
-export function deletedFriend(params){
+export function deletedFriend(params) {
     return request({
         url: '/api/user/friend/del',
         method: 'GET',
@@ -101,3 +101,24 @@ export function deletedFriend(params){
     })
 
 }
+
+//扩展信息
+export function saveUserExtInfo(extModel) {
+    return request({
+        url: '/api/user/ext/save_update',
+        method: 'POST',
+        data: extModel
+    })
+}
+
+export function getUserExtInfo(userId) {
+    return request({
+        url: '/api/user/ext/get/' + userId,
+        method: 'GET'
+    })
+}
+
+
+
+
+

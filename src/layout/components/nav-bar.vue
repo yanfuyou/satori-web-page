@@ -20,6 +20,7 @@
       <el-menu-item v-else index="/" @click="bye">再见</el-menu-item>
       <el-sub-menu index="/wonder">
         <template #title>奇妙地</template>
+        <el-menu-item index="/user-detail">主页</el-menu-item>
         <el-menu-item index="/worker">工作坑</el-menu-item>
         <el-menu-item index="/chat">聊天室</el-menu-item>
         <el-menu-item index="/stander">吾道坑</el-menu-item>
@@ -32,13 +33,12 @@
 </template>
 <script lang="ts" setup>
 import {ref} from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useUserStore} from '../../store/useUserStore';
 import { signOut } from '../../api/user-api';
 
 const userStore = useUserStore();
 const router = useRouter();
-const route = useRoute();
 
 const logoName = ref('Satori')
 const activeIndex = ref('/logo')

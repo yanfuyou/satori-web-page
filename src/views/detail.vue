@@ -2,12 +2,10 @@
   <div>
     <el-container>
       <el-aside v-if="isDetail">
-        <div class="avatar">
-          
-        </div>
+        <userBanner/>
       </el-aside>
       <el-main>
-        <write :is-detail="isDetail" :content-id="contentId"/>
+        <write :is-detail="isDetail" :content-id="contentId" />
       </el-main>
     </el-container>
   </div>
@@ -17,13 +15,16 @@
 import { ref, computed, onBeforeMount, watch } from "vue";
 import { useRouter } from "vue-router";
 import write from "@/components/editor/write.vue";
-const router = useRouter()
+import userBanner from '@/components/user/user-banner'
+
+
+const router = useRouter();
 
 const queryStr = window.location.search;
 const params = new URLSearchParams(queryStr);
 const contentId = ref(null);
 const isDetail = computed(() => {
-  return router.currentRoute.value.path === '/detail';
+  return router.currentRoute.value.path === "/detail";
 });
 onBeforeMount(() => {
   contentId.value = params.get("contentId");
