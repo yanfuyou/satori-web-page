@@ -3,7 +3,7 @@ import { getToken } from '@/utils/auth'
 import { ElMessage } from 'element-plus'
 const service = axios.create({
     // baseURL: process.env.VUE_APP_BASE_API,
-    baseURL: 'http://localhost:8080/satori-service-api',
+    baseURL: 'http://118.24.128.200/satori-service-api/',
     timeout: 10000
 })
 // 请求拦截

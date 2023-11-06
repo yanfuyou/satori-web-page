@@ -15,7 +15,7 @@
 import { ref, computed, onBeforeMount, watch } from "vue";
 import { useRouter } from "vue-router";
 import write from "@/components/editor/write.vue";
-import userBanner from '@/components/user/user-banner'
+import userBanner from '@/components/user/user-banner.vue'
 
 
 const router = useRouter();
