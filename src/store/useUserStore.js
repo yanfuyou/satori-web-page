@@ -14,8 +14,24 @@ export const useUserStore = defineStore('userStore', {
         }
     },
     getters: {
-        getUser: (state) => state.baseInfo,
-        needSignin: (state) => state.baseInfo.id === null || state.baseInfo.id === undefined || state.baseInfo.id === -1
+        getUser: (state) => {
+            if(state.baseInfo.id === null || state.baseInfo.id === undefined || state.baseInfo.id === -1){
+                const userInfoStr = sessionStorage.getItem("userInfo")
+                if(userInfoStr){
+                    state.baseInfo = JSON.parse(userInfoStr)
+                }
+            }
+            return state.baseInfo
+        },
+        needSignin: (state) => {
+            if(state.baseInfo.id === null || state.baseInfo.id === undefined || state.baseInfo.id === -1){
+                const userInfoStr = sessionStorage.getItem("userInfo")
+                if(userInfoStr){
+                    state.baseInfo = JSON.parse(userInfoStr)
+                }
+            }
+            return state.baseInfo.id === null || state.baseInfo.id === undefined || state.baseInfo.id === -1
+        }
     },
     actions: {
         saveUser(userInfo, tokenVal) {
@@ -27,6 +43,7 @@ export const useUserStore = defineStore('userStore', {
             this.baseInfo.avatar = avatar;
             this.baseInfo.email = userEmail;
             this.baseInfo.createTime = createTime;
+            sessionStorage.setItem('userInfo', JSON.stringify(this.baseInfo));
         },
         signOut() {
             this.baseInfo = {
@@ -38,6 +55,7 @@ export const useUserStore = defineStore('userStore', {
                 createTime: ''
             }
             removeToken();
+            sessionStorage.removeItem('userInfo');
         }
     }
 });
