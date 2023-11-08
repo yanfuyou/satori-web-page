@@ -24,6 +24,7 @@
   <div class="note">
     <div class="todo">
       <el-input
+        v-if="showInput"
         v-model="todo.newTodo"
         placeholder="回车保存"
         :suffix-icon="DocumentAdd"
@@ -52,14 +53,17 @@
 </template>
 
 <script setup>
-import { ref, getCurrentInstance, onBeforeMount } from "vue";
+import { ref, getCurrentInstance, onBeforeMount,computed } from "vue";
 import { DocumentAdd } from "@element-plus/icons-vue";
+import { useUserStore } from '@/store/useUserStore'
 
 //api
 import { getUserExtInfo, getUserInfo } from "@/api/user-api";
 import { saveTodo, changeTodoState, getTodoList } from "@/api/todo-api";
 
 const { showToast } = getCurrentInstance().appContext.config.globalProperties;
+const userStore = useUserStore()
+
 const user = ref({
   id: null,
   nikeName: null,
@@ -73,7 +77,9 @@ const userExt = ref({
   oneWords: null,
 });
 const props = defineProps(["userId"]);
-
+const showInput = computed(()=>{
+  return userStore.getUser.id === user.value.id
+})
 const todo = ref({
   newTodo: "",
   todoList: [],
