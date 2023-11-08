@@ -20,7 +20,7 @@ const emit = defineEmits(["loadMore"]);
 
 const tableRef = ref();
 const jumpToDetail = (row)=>{
-  router.push('/detail?contentId=' + row.id)
+  router.push('/detail?contentId=' + row.id + '&uid=' + row.name)
 }
 const bodyEvent=(e)=> {
   const scrollDirection = e.deltaY > 0 ? "down" : "up";
