@@ -10,4 +10,5 @@
 
 <style>
 @import "assets/css/app.css";
+@import "@/assets/css/font.css"
 </style>
