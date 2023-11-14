@@ -4,48 +4,56 @@
     <el-row :gutter="20" class="pet">
       <div class="pet-title">宠物纪</div>
       <div class="pet-content">
-        <div class="demo-fit">
-          <div v-for="fit in fits" :key="fit" class="block">
-            <span class="title">{{ fit }}</span>
-            <el-avatar shape="square" :size="100" :fit="fit" :src="url" />
-          </div>
-        </div>
-        <div class="demo-fit">
-          <div v-for="fit in fits" :key="fit" class="block">
-            <span class="title">{{ fit }}</span>
-            <el-avatar shape="square" :size="100" :fit="fit" :src="url" />
-          </div>
-        </div>
-        <!-- <el-scrollbar class="content-item">
-          <div class="scrollbar-flex-content">
-            <div class="scrollbar-demo-item" v-for="item in 10" :key="item">
-              {{ item }}
+        <el-card :body-style="{ padding: '0px' }" v-for="item in 5" :key="item">
+          <img
+            src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+            class="image"
+          />
+          <div style="padding: 14px">
+            <span>Yummy hamburger</span>
+            <div class="bottom">
+              <time class="time">{{ currentDate }}</time>
+              <el-button text class="button">Operating</el-button>
             </div>
           </div>
-        </el-scrollbar> -->
+        </el-card>
       </div>
     </el-row>
+    <el-divider border-style="dashed" />
     <!-- 内容信息 -->
     <el-row :gutter="20" class="history">
-      {{ "my wontent" }}
+      <el-col>
+        <el-tabs :tab-position="tabPosition" style="height: 200px" class="demo-tabs">
+          <el-tab-pane label="User">
+            <tab-content :content="tabs[0]" />
+          </el-tab-pane>
+          <el-tab-pane label="Config">Config</el-tab-pane>
+          <el-tab-pane label="Role">Role</el-tab-pane>
+          <el-tab-pane label="Task">Task</el-tab-pane>
+        </el-tabs>
+      </el-col>
     </el-row>
   </div>
 </template>
 
 <script setup>
 import petCategory from "@/components/user/pet-category.vue";
+import tabContent from "@/components/user/tab-content.vue";
 import { reactive, toRefs } from "vue";
 
 const state = reactive({
-  fits: ["fill", "contain", "cover", "none", "scale-down"],
-  url: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+  //宠物列表
+  pets: [{}],
+  currentDate: new Date(),
+  tabPosition: "left",
+  tabs: ["user", "config", "role", "task"],
 });
 
-const { fits, url } = toRefs(state);
+const { currentDate, tabPosition, tabs } = toRefs(state);
 </script>
 <style lang="scss" scoped>
 .pet {
-  height: 400px;
+  height: 350px;
 
   .pet-title {
     height: 50px;
@@ -56,46 +64,36 @@ const { fits, url } = toRefs(state);
   .pet-content {
     width: 100%;
     margin-top: 0;
-    .content-item {
-      width: 300px;
+    display: flex;
+    justify-content: center;
+    .el-card {
+      height: 100%;
+      width: 15%;
+      margin-right: 30px;
     }
   }
 }
 
-.scrollbar-flex-content {
-  display: flex;
+.time {
+  font-size: 12px;
+  color: #999;
 }
 
-.scrollbar-demo-item {
-  flex-shrink: 0;
+.bottom {
+  margin-top: 13px;
+  line-height: 12px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 40px;
-  margin: 5px;
-  text-align: center;
-  border-radius: 4px;
-  background: var(--el-color-danger-light-9);
-  color: var(--el-color-danger);
-}
-
-.demo-fit {
-  display: flex;
-  text-align: center;
   justify-content: space-between;
-  margin-bottom: 20px;
-}
-.demo-fit .block {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 0;
+  align-items: center;
 }
 
-.demo-fit .title {
-  margin-bottom: 5px;
-  font-size: 14px;
-  color: var(--el-text-color-secondary);
+.button {
+  padding: 0;
+  min-height: auto;
+}
+
+.image {
+  width: 100%;
+  display: block;
 }
 </style>
