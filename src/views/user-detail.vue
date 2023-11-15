@@ -37,9 +37,7 @@ const userId = computed(() => {
     ? router.currentRoute.value.query.id
     : userStore.getUser.id;
 });
-onMounted(() => {
- 
-});
+onMounted(() => {});
 </script>
 <style scoped>
 #header {
@@ -77,7 +75,7 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  width: 25%;
+  width: 30%;
 }
 
 .el-main {

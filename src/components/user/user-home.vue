@@ -1,19 +1,26 @@
 <template>
   <div>
     <!-- 我的宠物 -->
-    <el-row :gutter="20" class="pet">
+    <el-row :gutter="10" class="pet">
       <div class="pet-title">宠物纪</div>
       <div class="pet-content">
-        <el-card :body-style="{ padding: '0px' }" v-for="item in 5" :key="item">
+        <el-card :body-style="{ padding: '0px' }" v-for="index in 5" :key="index">
           <img
+            v-if="pets[index]"
             src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
             class="image"
           />
-          <div style="padding: 14px">
+          <img v-else :src="defaultAddImg" class="image" />
+          <div style="padding: 14px" v-if="pets[index]">
             <span>Yummy hamburger</span>
             <div class="bottom">
               <time class="time">{{ currentDate }}</time>
-              <el-button text class="button">Operating</el-button>
+            </div>
+          </div>
+          <div style="padding: 14px" v-else>
+            <span>圣火喵喵</span>
+            <div class="bottom">
+              <time class="time">{{ "添加您的宠物" }}</time>
             </div>
           </div>
         </el-card>
@@ -25,7 +32,7 @@
       <el-col>
         <el-tabs :tab-position="tabPosition" style="height: 200px" class="demo-tabs">
           <el-tab-pane label="User">
-            <tab-content :content="tabs[0]" />
+            <tab-content :content="tabs[0]" :articles="articles" />
           </el-tab-pane>
           <el-tab-pane label="Config">Config</el-tab-pane>
           <el-tab-pane label="Role">Role</el-tab-pane>
@@ -39,17 +46,27 @@
 <script setup>
 import petCategory from "@/components/user/pet-category.vue";
 import tabContent from "@/components/user/tab-content.vue";
+import defaultAddImg from "@/assets/img/pet.png";
+
 import { reactive, toRefs } from "vue";
 
 const state = reactive({
   //宠物列表
-  pets: [{}],
+  pets: [],
   currentDate: new Date(),
   tabPosition: "left",
   tabs: ["user", "config", "role", "task"],
+  articles: [
+    // {
+    //   title: "User",
+    //   createTime: "2021-07-07 10:30",
+    //   readCount: 100,
+    //   state: 1,
+    // },
+  ],
 });
 
-const { currentDate, tabPosition, tabs } = toRefs(state);
+const { pets, currentDate, tabPosition, tabs, articles } = toRefs(state);
 </script>
 <style lang="scss" scoped>
 .pet {

@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div class="container">
     <el-container>
       <el-aside v-if="isDetail">
-        <userBanner :user-id="currentUserId"/>
+        <userBanner :user-id="currentUserId" />
       </el-aside>
       <el-main>
-        <write :is-detail="isDetail" :content-id="contentId"/>
+        <write :is-detail="isDetail" :content-id="contentId" />
       </el-main>
     </el-container>
   </div>
@@ -15,8 +15,7 @@
 import { ref, computed, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
 import write from "@/components/editor/write.vue";
-import userBanner from '@/components/user/user-banner.vue'
-
+import userBanner from "@/components/user/user-banner.vue";
 
 const router = useRouter();
 
@@ -34,3 +33,10 @@ onBeforeMount(() => {
   currentUserId.value = params.get("uid");
 });
 </script>
+
+<style lang="scss" scoped>
+.el-aside {
+  margin-left: 100px;
+  width: 20%;
+}
+</style>
