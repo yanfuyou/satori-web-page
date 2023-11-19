@@ -38,6 +38,9 @@ export function fileUpload(data){
     return request({
         url:'/api/system/file/upload',
         method:'POST',
+        headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         data
     })
 }

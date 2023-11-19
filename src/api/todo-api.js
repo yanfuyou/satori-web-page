@@ -12,7 +12,7 @@ export function saveTodo(data) {
 export function changeTodoState(params) {
     return request({
         url: '/api/todo/change_state',
-        method: 'get ',
+        method: 'get',
         params
     })
 }
