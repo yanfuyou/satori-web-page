@@ -1,17 +1,19 @@
 <template>
-  <el-timeline-item timestamp="2018/4/12" placement="top" class="time-item">
+  <el-timeline-item :timestamp="deedInfo.occTime" placement="top" class="time-item">
     <el-card>
       <div class="img-car">
-        <el-carousel :interval="4000" type="card" height="200px">
-          <el-carousel-item v-for="item in 6" :key="item">
-            <h3 text="2xl" justify="center">{{ item }}</h3>
+        <el-carousel :interval="4000" type="card" height="200px" autoplay>
+          <el-carousel-item v-for="(pic, index) in deedInfo.pictures" :key="index">
+            <!-- <h3 text="2xl" justify="center">{{ pic }}</h3> -->
+            <el-image style="height: 200px" :src="pic" fit="fill" />
+            <!-- <img :src="pic" alt="" /> -->
           </el-carousel-item>
         </el-carousel>
       </div>
       <div class="content">
-        <h3 class="title">Update Github template</h3>
-        <p class="detail">Tom committed 2018/4/12 20:46</p>
-        <span class="footer">记录于: {{ defaultAddr }}</span>
+        <h3 class="title">{{ deedInfo.title }}</h3>
+        <p class="detail">{{ deedInfo.description }}</p>
+        <span class="footer">记录于: {{ deedInfo.occTime }}</span>
       </div>
     </el-card>
   </el-timeline-item>
@@ -19,15 +21,9 @@
 
 <script setup>
 import { reactive, toRefs } from "vue";
-const props = defineProps(["deesInfo"]);
+const props = defineProps(["deedInfo"]);
 
-const state = reactive({
-  defaultAddr: "未知",
-  now: new Date(),
-  deedInfo: {},
-});
-
-const { defaultAddr, now, deedInfo } = toRefs(state);
+const { deedInfo } = toRefs(props);
 </script>
 
 <style lang="scss" scoped>
@@ -71,10 +67,10 @@ const { defaultAddr, now, deedInfo } = toRefs(state);
 }
 
 .el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
+  background-color: none;
 }
 
 .el-carousel__item:nth-child(2n + 1) {
-  background-color: #d3dce6;
+  background-color: none;
 }
 </style>
