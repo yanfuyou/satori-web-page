@@ -39,7 +39,7 @@
     </el-row>
     <el-row>
       <el-col :span="2"> </el-col>
-      <el-col :span="18">
+      <!-- <el-col :span="18">
         <div class="grid-content ep-bg-purple-dark">
           <el-scrollbar>
             <div class="scrollbar-flex-content">
@@ -49,7 +49,7 @@
             </div>
           </el-scrollbar>
         </div>
-      </el-col>
+      </el-col> -->
       <el-col :span="2"> </el-col>
     </el-row>
     <el-row>
@@ -63,21 +63,19 @@
           <el-skeleton style="width: 240px" :loading="loading" animated :throttle="500">
             <template #default>
               <el-card
-                :body-style="{ padding: '0px', marginBottom: '1px' }"
-                v-for="item in 6"
-                :key="item"
+                :body-style="{ padding: '5px', marginBottom: '1px' }"
+                v-for="(pet, index) in randomPets"
+                :key="index"
+                @click="toDeeds(pet.id)"
               >
-                <img
-                  src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-                  class="image"
-                />
+                <el-image style="height: 235px" :src="pet.avatar" fit="fill" />
                 <div style="padding: 14px">
-                  <span>Delicious hamburger{{ item }}</span>
+                  <span>{{ pet.alias }}</span>
                   <div class="bottom card-header">
-                    <div class="time">{{ currentDate }}</div>
-                    <el-button text class="button" @click="show(item)"
+                    <div class="time">{{ pet.description }}</div>
+                    <!-- <el-button text class="button" @click="show(item)"
                       >operation button</el-button
-                    >
+                    > -->
                   </div>
                 </div>
               </el-card>
@@ -94,7 +92,7 @@
     <el-row>
       <el-col :span="10">
         <div>
-          <scroll-table @loadMore="loadMore" :table-data="tableData" ref="tableOne"/>
+          <scroll-table @loadMore="loadMore" :table-data="rainData" ref="tableOne" />
         </div>
       </el-col>
       <el-col :span="2">
@@ -115,23 +113,31 @@
       </el-col>
       <el-col :span="10">
         <div>
-          <scroll-table :table-data="tableData" />
+          <scroll-table :table-data="commentData" />
         </div>
       </el-col>
     </el-row>
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { onMounted, onBeforeUnmount, ref, reactive, computed } from "vue";
 import scrollTable from "../components/table/scroll-table.vue";
 import { getParamValueByName, requestThirdUrlGet } from "../api/system-api.js";
 import { contentListPage } from "../api/content-api";
 import { useSystemStore } from "../store/useSystemStore";
+import { randomPet } from "../api/pet-api.js";
+import { useRouter } from "vue-router";
+const router = useRouter();
+
 const tableOne = ref();
 const systemStore = useSystemStore();
 const titleOne = ref("踩过的坑");
 const titleMore = ref("更多");
+const randomPets = ref([]);
+const commentData = ref([]);
+const rainData = ref([]);
+
 const beautyWords = reactive({
   created_at: "1696014986",
   from: "",
@@ -148,6 +154,7 @@ const pageRequest = {
   keyWord: null,
   startTime: null,
   endTime: null,
+  categoryId: null,
 };
 
 const covertWords = computed(() => {
@@ -171,7 +178,8 @@ const noticeHtml = ref("");
 
 const loadMore = (type) => {
   pageRequest.page++;
-  getTableDate(type);
+  initCommonData(type);
+  initRainData(type);
 };
 
 onMounted(() => {
@@ -188,8 +196,12 @@ onMounted(() => {
     "<button plain onclick='alert()'>Plain</button>";
 
   //拉取表格数据
-  tableData.value = [];
-  getTableDate(0);
+  initCommonData(2);
+  initRainData(1);
+
+  randomPet(6).then((res) => {
+    randomPets.value = res.data;
+  });
 });
 
 onBeforeUnmount(() => {
@@ -213,26 +225,48 @@ const changeWords = () => {
   });
 };
 
-function show(str: number) {
+function show(str) {
   alert(str);
 }
 
-const getTableDate = (type: number) => {
+const initRainData = (type) => {
+  pageRequest.categoryId = type;
   contentListPage(pageRequest).then((res) => {
     if (res.data.records.length > 0) {
       for (let c of res.data.records) {
-        tableData.value.push({
+        rainData.value.push({
           date:
             c.createTime.substring(0, 11).replace("-", "年").replace("-", "月") + "日",
           name: c.createUserId,
           address: c.title,
-          id: c.id
+          id: c.id,
         });
       }
     }
   });
 };
-const tableData = ref([{}]);
+
+const initCommonData = (type) => {
+  pageRequest.categoryId = type;
+  contentListPage(pageRequest).then((res) => {
+    if (res.data.records.length > 0) {
+      for (let c of res.data.records) {
+        commentData.value.push({
+          date:
+            c.createTime.substring(0, 11).replace("-", "年").replace("-", "月") + "日",
+          name: c.createUserId,
+          address: c.title,
+          id: c.id,
+        });
+      }
+      console.log(commentData.value);
+    }
+  });
+};
+
+const toDeeds = (petId) => {
+  router.push({ path: "/pet/deeds", query: { petId } });
+};
 </script>
 
 <style scoped>

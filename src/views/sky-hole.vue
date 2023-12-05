@@ -4,6 +4,7 @@
       <button @click="change">stop</button>
       <button @click="quick">quick</button>
       <button @click="slow">slow</button>
+      <button @click="showTips">tips</button>
     </div>
     <canvas id="bg"></canvas>
   </div>
@@ -34,12 +35,14 @@ const change = () => {
 const quick = () => {
   StarrySky.setStarSpeedLevel(0.01);
 };
-    quickly: () => {
-      
-    }
+quickly: () => {};
 
 const slow = () => {
   StarrySky.setStarSpeedLevel(0.0002);
+};
+
+const showTips = () => {
+  alert("不久的将来这里将展示来自天涯海角留言");
 };
 </script>
 

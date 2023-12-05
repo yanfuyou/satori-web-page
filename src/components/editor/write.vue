@@ -14,6 +14,28 @@
       :mode="mode"
       @onCreated="handleCreated"
     />
+    <el-dialog v-model="selectCategoryFlag" style="width: 500px">
+      <div style="display: inline-block">
+        <el-tooltip
+          class="box-item"
+          effect="dark"
+          content="彩过的坑"
+          placement="top-start"
+        >
+          <el-icon size="100px" @click="realUp(1)"><MuteNotification /> </el-icon>
+        </el-tooltip>
+      </div>
+      <div style="display: inline-block">
+        <el-tooltip
+          class="box-item"
+          effect="dark"
+          content="一条小建议"
+          placement="top-start"
+        >
+          <el-icon size="100px" class="bell" @click="realUp(2)"><Bell /></el-icon>
+        </el-tooltip>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script setup>
@@ -42,11 +64,13 @@ const props = defineProps(["isDetail", "contentId"]);
 const editorRef = shallowRef();
 const mode = ref("default");
 const toolbarConfig = {
-  excludeKeys: ["fullScreen", "insertVideo"],
+  excludeKeys: ["fullScreen", "insertVideo", "redo", "group-video"],
 };
 const editorConfig = { placeholder: "请输入内容" };
 const htmlVal = ref(null);
 const imageServer = ref(null);
+const selectCategoryFlag = ref(false);
+const waitUpData = ref(null);
 
 //插入图
 const setImgServer = (editorConfig) => {
@@ -102,7 +126,7 @@ const handleCreated = (editor) => {
   editorRef.value.setHtml("<h1>标题</h1>");
   if (props.isDetail) {
     editorRef.value.getConfig().readOnly = true;
-  }else{
+  } else {
     editorRef.value.getConfig().readOnly = false;
   }
   //防止重复添加菜单
@@ -110,7 +134,7 @@ const handleCreated = (editor) => {
     Boot.registerMenu(Save);
   }
   toolbarConfig.insertKeys = {
-    index: 29,
+    index: 30,
     keys: ["save"],
   };
 };
@@ -137,9 +161,15 @@ const displayVal = (editor) => {
         : title,
     createUserId: userStore.getUser.id,
   };
+  waitUpData.value = data;
+  selectCategoryFlag.value = true;
+};
 
-  contentUp(data).then((res) => {
+const realUp = (categoryId) => {
+  waitUpData.value.categoryId = categoryId;
+  contentUp(waitUpData.value).then((res) => {
     showToast(false, "success", "消息已发布到星球啦");
+    selectCategoryFlag.value = false;
   });
 };
 
@@ -160,7 +190,7 @@ onBeforeUnmount(() => {
 });
 
 watch(router.currentRoute, (newRoute) => {
-  if (newRoute.path === '/write') {
+  if (newRoute.path === "/write") {
     editorRef.value.clear();
     editorRef.value.getConfig().readOnly = false;
     editorRef.value.setHtml("<h1>标题</h1>");
@@ -173,5 +203,8 @@ watch(router.currentRoute, (newRoute) => {
   width: 80%;
   text-align: center;
   margin: 0 auto;
+}
+.bell {
+  margin-left: 20px;
 }
 </style>
