@@ -246,6 +246,7 @@ const savePet = () => {
       };
     });
   } else {
+    petInfo.id = null;
     petInfo.value.avatar = tempUrl;
     petInfo.value.age = new Date().getFullYear() - petInfo.value.birthday.substring(0, 4);
     petInfo.value.ownerId = userStore.getUser.id;
