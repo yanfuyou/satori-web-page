@@ -7,7 +7,7 @@
   <el-row class="session-messages">
     <el-col :span="24">
       <div class="message-box">
-        <message-item :messages="messages" :sessionChange="sessionChange"/>
+        <message-item :messages="messages" :sessionChange="sessionChange" />
       </div>
     </el-col>
   </el-row>
@@ -48,49 +48,52 @@ const activeSession = computed(() => {
 //群用户
 const groupUsers = reactive([{}]);
 
-const sessionChange = reactive({flag:false})
+const sessionChange = reactive({ flag: false });
 //切换会话框刷新用户和消息
-watch(props.activeSession, async (currentSession)=>{
+watch(props.activeSession, async (currentSession) => {
   sessionChange.flag = !sessionChange.flag;
-  const sessionType = currentSession.sessionType === "group" ? 2 : 1; 
-  if(sessionType === 2 ){
+  const sessionType = currentSession.sessionType === "group" ? 2 : 1;
+  if (sessionType === 2) {
     //拉取群用户信息
-    await getGroupUsers({groupId:currentSession.id}).then(res => {
+    await getGroupUsers({ groupId: currentSession.id }).then((res) => {
       groupUsers.length = 0;
-      for(let i =0;i<res.data.length;i++){
+      for (let i = 0; i < res.data.length; i++) {
         groupUsers.push(res.data[i]);
       }
     });
   }
-  await getMessageHistory({userId:userStore.getUser.id,receiverId:currentSession.id,receiverType:sessionType }).then(res =>{
-      messages.length = 0;
-      for(let i =0;i<res.data.length;i++){
-        messages.push(res.data[i]);
-      }
-    });
-})
-
+  await getMessageHistory({
+    userId: userStore.getUser.id,
+    receiverId: currentSession.id,
+    receiverType: sessionType,
+  }).then((res) => {
+    messages.length = 0;
+    for (let i = 0; i < res.data.length; i++) {
+      messages.push(res.data[i]);
+    }
+  });
+});
 
 let socket;
 onMounted(() => {
-
   socket = new WebSocket(
-    "ws://localhost:8080/satori-service-api/websocket/message/" + userStore.getUser.id
+    "ws://www.mew-mew-satori.top/satori-service-api/websocket/message/" +
+      userStore.getUser.id
   );
   //  socket = io('ws://localhost:8080/websocket/message');
   // 查询自己的聊天会话
   socket.onmessage = function (msg) {
-    const msgBody = JSON.parse(msg.data)
-    if(msgBody.id != undefined){
+    const msgBody = JSON.parse(msg.data);
+    if (msgBody.id != undefined) {
       messages.push({
-      id:msgBody.id,
-      createTime: new Date(),
-      messageContent: msgBody.content,
-      parentMessageId: 0,
-      receiverId: msgBody.receiverId,
-      senderId: msgBody.senderId,
-      receiverType: msgBody.messageType
-    })
+        id: msgBody.id,
+        createTime: new Date(),
+        messageContent: msgBody.content,
+        parentMessageId: 0,
+        receiverId: msgBody.receiverId,
+        senderId: msgBody.senderId,
+        receiverType: msgBody.messageType,
+      });
     }
   };
   socket.onclose = function () {
@@ -101,7 +104,6 @@ onMounted(() => {
     console.log("websocket发生了错误");
   };
 });
-
 
 onBeforeUnmount(() => {
   socket.close();
@@ -114,10 +116,10 @@ const send = () => {
     content: intputMsg.value,
     userId: userStore.getUser.id,
     receiverId: activeSession.value.id,
-    sendType: activeSession.value.sessionType === "group" ? 2 : 1
+    sendType: activeSession.value.sessionType === "group" ? 2 : 1,
   };
   socket.send(JSON.stringify(msgBody));
-  intputMsg.value = '';
+  intputMsg.value = "";
 };
 </script>
 <style scoped lang="scss">
