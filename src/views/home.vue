@@ -66,7 +66,7 @@
                 :body-style="{ padding: '5px', marginBottom: '1px' }"
                 v-for="(pet, index) in randomPets"
                 :key="index"
-                @click="toDeeds(pet.id)"
+                @click="toDeeds(pet.id, pet.ownerId)"
               >
                 <el-image style="height: 235px" :src="pet.avatar" fit="fill" />
                 <div style="padding: 14px">
@@ -264,8 +264,8 @@ const initCommonData = (type) => {
   });
 };
 
-const toDeeds = (petId) => {
-  router.push({ path: "/pet/deeds", query: { petId } });
+const toDeeds = (petId, ownerId) => {
+  router.push({ path: "/pet/deeds", query: { petId, ownerId } });
 };
 </script>
 

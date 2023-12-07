@@ -1,6 +1,6 @@
 <template>
   <div class="deeds-container">
-    <div class="new-item">
+    <div class="new-item" v-if="isMyPet">
       <el-row>
         <el-col :span="4" :offset="20">
           <el-button type="info" :icon="EditPen" circle @click="dFlag = true" />
@@ -66,14 +66,16 @@
 </template>
 
 <script setup>
-import { ref, toRefs, onMounted, reactive } from "vue";
+import { ref, toRefs, onBeforeMount, onMounted, reactive, computed } from "vue";
 import { EditPen } from "@element-plus/icons-vue";
 import { ElMessageBox } from "element-plus";
 import { useRoute } from "vue-router";
 import { fileUpload } from "@/api/system-api.js";
 import DeedItem from "@/components/pet/deed-item.vue";
-
+import { useUserStore } from "../store/useUserStore";
 import { save, pageList } from "@/api/pet-deeds-api";
+
+const userStore = useUserStore();
 
 const route = useRoute();
 const dFlag = ref(false);
@@ -88,12 +90,16 @@ const state = reactive({
     pictures: null,
   },
   deeds: [],
+  petId: null,
+  userId: null,
 });
 const fileList = ref([]);
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 
-const { deedModel, deeds } = toRefs(state);
+const { deedModel, deeds, petId, userId } = toRefs(state);
+
+const isMyPet = computed(() => userStore.getUser.id == userId.value);
 
 onMounted(() => {
   pageList({ page: 0, size: 20, petId: route.query.petId }).then((res) => {
@@ -166,6 +172,11 @@ const upload = (uploadFile) => {
       });
   }
 };
+
+onBeforeMount(() => {
+  petId.value = route.query.petId;
+  userId.value = route.query.ownerId;
+});
 </script>
 
 <style lang="scss" scoped>
