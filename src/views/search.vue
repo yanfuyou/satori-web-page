@@ -1,13 +1,9 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
   <div id="search">
-    {{'this is search'}}
+    {{ "如果你希望我加一些功能,请发送邮件至:yanfuyou@hotmail.com" }}
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
